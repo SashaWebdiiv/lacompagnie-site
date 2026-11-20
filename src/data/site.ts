@@ -9,12 +9,32 @@ export const site = {
   facebook: "https://www.facebook.com/LacompagnieSucy",
 };
 
-/** Menu principal (« Menu site - sans billetterie » dans WordPress) ; la billetterie a son propre bouton. */
+/**
+ * Menu de l'en-tête sur ordinateur (« Menu site - sans billetterie » dans WordPress) ;
+ * la billetterie a son propre bouton. L'entrée « Connexion » (espace élèves) est retirée.
+ */
 export const navigation = [
   { libelle: "Accueil", href: "/" },
-  { libelle: "Nos cours", href: "/cours/" },
-  { libelle: "Nos projets", href: "/projets/" },
+  { libelle: "Nos Cours", href: "/cours/" },
+  { libelle: "Nos Projets", href: "/projets/" },
   { libelle: "Contact", href: "/contact/" },
+];
+
+/** Menu plein écran (« Menu site - avec billetterie » dans WordPress), sans « Connexion ». */
+export const navigationPleinEcran = [
+  { libelle: "Accueil", href: "/" },
+  { libelle: "Billetterie", href: "/billetterie/" },
+  { libelle: "Cours", href: "/cours/" },
+  { libelle: "Catalogue", href: "/projets/" },
+  { libelle: "Contact", href: "/contact/" },
+];
+
+/** Liens légaux du pied de page. */
+export const liensLegaux = [
+  { libelle: "Mentions légales", href: "/mentions-legales/" },
+  { libelle: "CGV", href: "/conditions-generales-de-vente/" },
+  { libelle: "Politique de confidentialité", href: "/politique-de-confidentialite/" },
+  { libelle: "Politique de cookies", href: "/politique-de-cookies/" },
 ];
 
 /** Titres et descriptions SEO, repris tels quels de Yoast. */

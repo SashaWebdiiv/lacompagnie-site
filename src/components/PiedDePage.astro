@@ -1,0 +1,188 @@
+---
+/**
+ * Pied de page : dégradé jaune animé, adresse, liens légaux, Instagram.
+ * Les liens « Espace élèves » et « Gérer les cookies » de l'ancien site sont retirés
+ * (espace élèves abandonné, plus de bannière cookies).
+ */
+import { liensLegaux, site } from "../data/site";
+
+const annee = new Date().getFullYear();
+---
+
+<footer class="pied">
+  <div class="pied__contenu">
+    <hr class="pied__trait" />
+
+    <div class="pied__colonnes">
+      <address class="pied__adresse">
+        {site.nom}<br />
+        {site.adresse[0]}<br />
+        {site.adresse[1]}<br />
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </address>
+
+      <div class="pied__legal">
+        <p>© {annee} L’acompagnie improvisée – Tous droits réservés</p>
+        <p>
+          {
+            liensLegaux.map((lien, i) => (
+              <>
+                {i === 3 && <br />}
+                {i > 0 && i !== 3 && " – "}
+                <a href={lien.href}>{lien.libelle}</a>
+              </>
+            ))
+          }
+        </p>
+      </div>
+
+      <div class="pied__reseaux">
+        <p>On se retrouve sur</p>
+        <a href={site.instagram} target="_blank" rel="noopener" aria-label="Instagram (nouvel onglet)">
+          <svg aria-hidden="true" viewBox="0 0 448 512"
+            ><path
+              d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"
+            ></path></svg
+          >
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .pied {
+    padding: 30px 30px 20px;
+    background: linear-gradient(62deg, #ffed00, #ffffff00, #ffffff4d, #ffed00);
+    background-size: 400% 500%;
+    animation: degrade 15s ease infinite;
+    color: var(--noir);
+  }
+
+  @keyframes degrade {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .pied__contenu {
+    max-width: 1312px;
+    margin: 0 auto;
+  }
+
+  .pied__trait {
+    margin: 15px 0;
+    border: 0;
+    border-top: 1px solid var(--noir);
+  }
+
+  .pied__colonnes {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .pied__adresse {
+    flex: 0 0 25%;
+    padding: 0 20px 0 40px;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .pied__legal {
+    flex: 1;
+    margin: 9px 10px 0;
+    font-size: 14px;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .pied__legal p {
+    margin: 0;
+  }
+
+  .pied a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pied a:hover {
+    text-decoration: underline;
+  }
+
+  .pied__reseaux {
+    flex: 0 0 25%;
+    padding-left: 20px;
+    text-align: center;
+  }
+
+  .pied__reseaux p {
+    margin: 7px 0 14.4px;
+    font-family: var(--fonte-titre);
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .pied__reseaux a {
+    display: inline-flex;
+    margin-top: -10px;
+    padding: 10px 8px;
+    background: var(--noir);
+    transition: background-color 0.3s;
+  }
+
+  .pied__reseaux svg {
+    width: 34px;
+    height: 38px;
+    fill: var(--blanc);
+    transition: fill 0.3s;
+  }
+
+  .pied__reseaux a:hover {
+    background: transparent;
+  }
+
+  .pied__reseaux a:hover svg {
+    fill: var(--noir);
+  }
+
+  @media (max-width: 1024px) {
+    .pied__adresse,
+    .pied__legal { font-size: 10px; }
+    .pied__reseaux p { font-size: 10px; }
+  }
+
+  @media (max-width: 767px) {
+    .pied {
+      padding: 20px;
+    }
+
+    .pied__colonnes {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .pied__adresse {
+      display: none;
+    }
+
+    .pied__reseaux {
+      order: -1;
+      padding: 0;
+      margin-bottom: 12px;
+    }
+
+    .pied__reseaux p {
+      font-size: 14px;
+    }
+
+    .pied__legal {
+      margin: 8px 0 2px;
+      font-size: 9px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pied { animation: none; }
+  }
+</style>

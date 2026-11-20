@@ -1,10 +1,10 @@
 ---
 import "@fontsource/dm-sans/400.css";
 import "@fontsource/dm-sans/700.css";
-import "@fontsource/poppins/400.css";
-import "@fontsource/poppins/600.css";
-import "@fontsource/syne/700.css";
+import "@fontsource/dm-sans/400-italic.css";
 import "../styles/global.css";
+import EnTete from "../components/EnTete.astro";
+import PiedDePage from "../components/PiedDePage.astro";
 import { site, seo, type CleSeo } from "../data/site";
 
 interface Props {
@@ -32,6 +32,7 @@ const canonique = new URL(Astro.url.pathname, site.url).href;
     <meta name="theme-color" content="#000000" />
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="preload" href="/fonts/Lovelo-Black.otf" as="font" type="font/otf" crossorigin />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.nom} />
@@ -44,6 +45,29 @@ const canonique = new URL(Astro.url.pathname, site.url).href;
   </head>
 
   <body>
+    <EnTete />
     <slot />
+    <PiedDePage />
+
+    <script>
+      // Animations d'apparition au défilement (reprises d'Elementor : fadeInUp, zoomIn…).
+      const elements = document.querySelectorAll<HTMLElement>("[data-anim]");
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        const observateur = new IntersectionObserver(
+          (entrees) => {
+            for (const entree of entrees) {
+              if (!entree.isIntersecting) continue;
+              entree.target.classList.add("anim-visible");
+              observateur.unobserve(entree.target);
+            }
+          },
+          { rootMargin: "0px 0px -10% 0px" },
+        );
+        elements.forEach((el) => {
+          el.classList.add("anim-prete");
+          observateur.observe(el);
+        });
+      }
+    </script>
   </body>
 </html>

@@ -53,3 +53,55 @@ h2,
 h3 { font-family: var(--fonte-titre); color: var(--nuit); text-transform: uppercase; margin: 0; }
 
 a { color: inherit; }
+
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Boutons arrondis (Elementor « button ») ── */
+.bouton {
+  display: inline-block;
+  padding: 20px 33px;
+  border-radius: 50px;
+  font-family: var(--fonte-titre);
+  font-size: 18px;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.bouton--bordeaux { background: var(--bordeaux); color: var(--blanc); }
+.bouton--bordeaux:hover,
+.bouton--bordeaux:focus-visible { background: var(--jaune); color: var(--noir); }
+
+.bouton--jaune { background: var(--jaune); color: var(--noir); }
+.bouton--jaune:hover,
+.bouton--jaune:focus-visible { background: var(--blanc); color: var(--noir); }
+
+/* ── Animations d'apparition (durée Elementor : 1,25 s) ── */
+.anim-prete { opacity: 0; }
+
+.anim-visible {
+  animation-duration: 1.25s;
+  animation-fill-mode: both;
+  animation-delay: var(--anim-delai, 0ms);
+}
+
+.anim-visible[data-anim="fadeInUp"] { animation-name: fadeInUp; }
+.anim-visible[data-anim="zoomIn"] { animation-name: zoomIn; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate3d(0, 100%, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); }
+  50% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}

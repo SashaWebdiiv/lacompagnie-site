@@ -1,8 +1,604 @@
 ---
+import { Image, getImage } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import posterFond from "../assets/accueil/home-videobg-poster.png";
+import posterTroupe from "../assets/accueil/presentation-troupe-v3-poster.png";
+import fleche from "../assets/accueil/arrow-black.svg";
+import punaise from "../assets/accueil/pin-def.png";
+import imageCours from "../assets/accueil/cours_theatre.png";
+import imageParole from "../assets/accueil/prise_parole_formations.png";
+import troupeSemiPro from "../assets/accueil/troupe-semipro.svg";
+
+const posterFondOptimise = await getImage({ src: posterFond, width: 1920, format: "webp" });
+const posterTroupeOptimise = await getImage({ src: posterTroupe, width: 1000, format: "webp" });
+
+const chiffres = [
+  { valeur: "50", libelle: "Comédiens pour la saison 2024-2025" },
+  { valeur: "100", libelle: "personnes formées à la pratique du théâtre" },
+  { valeur: "4", libelle: "bougies soufflées par l'association !" },
+];
+
+const portes = [
+  {
+    image: imageCours,
+    titre: "Les cours de l'acompagnie",
+    texte:
+      "Découvrez nos ateliers, nos pédagogies, et nos créneaux. L’occasion rêvée de monter sur les planches, que vous soyez débutant curieux ou comédien confirmé",
+    href: "/cours/",
+  },
+  {
+    image: imageCours,
+    titre: "Les coulisses, côté réseaux",
+    texte:
+      "Explorez nos projets, nos spectacles, et tous les éclats de scène qu’on partage sur les réseaux. C’est ici que tout se joue en images.",
+    href: "/cours/",
+  },
+  {
+    image: imageParole,
+    titre: "Parlez-nous, on vous écoute",
+    texte:
+      "Une question ? Une envie de jouer avec nous ? Envie de monter un projet ou juste de discuter ? Ouvrez le rideau : ici, c’est le moment de nous faire signe.",
+    href: "/contact/",
+    delai: 200,
+  },
+];
 ---
 
 <Layout page="accueil">
-  <EnConstruction titre="L'acompagnie improvisée" />
+  <main>
+    <!-- ── Ouverture ── -->
+    <section class="ouverture">
+      <video
+        class="ouverture__video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        poster={posterFondOptimise.src}
+        aria-hidden="true"
+      >
+        <source src="/videos/accueil-fond.mp4" type="video/mp4" />
+      </video>
+      <div class="ouverture__voile"></div>
+
+      <div class="ouverture__contenu">
+        <h1>De l'impro...<br />à l'improbable</h1>
+        <p>
+          Parce que chaque pas sur scène est aussi un pas vers l’inattendu, nous avons imaginé un théâtre à notre façon
+          pour former une famille dans laquelle les rires, les craintes et les succès se vivent et se partagent avec une
+          intensité unique. Bienvenue dans notre troupe.
+        </p>
+        <a class="bouton bouton--bordeaux ouverture__bouton" href="/cours/">Nos cours de théâtre</a>
+      </div>
+    </section>
+
+    <!-- ── Présentation + chiffres clés ── -->
+    <section class="presentation">
+      <div class="conteneur presentation__grille">
+        <div class="presentation__texte">
+          <div class="presentation__media">
+            <video
+              autoplay
+              muted
+              loop
+              playsinline
+              poster={posterTroupeOptimise.src}
+              width="1000"
+              height="500"
+              aria-label="La troupe L'acompagnie improvisée"
+            >
+              <source src="/videos/presentation-troupe.mp4" type="video/mp4" />
+            </video>
+            <div class="presentation__fleche" aria-hidden="true">
+              <div><Image src={fleche} alt="" /></div>
+            </div>
+          </div>
+
+          <div class="presentation__paragraphes">
+            <p>
+              <strong>Bienvenue chez L’Acompagnie Improvisée<br /></strong>À Sucy-en-Brie, des voix s’élèvent, des corps
+              se cherchent, des regards se répondent.<br />Nous sommes une troupe. Une troupe comme il en existe peu. Pas
+              parce que nous cherchons à briller, mais parce que nous cherchons <em>vrai</em>.<br />Vrai dans le jeu, vrai
+              dans le rire, vrai dans le doute.
+            </p>
+            <p>
+              On écrit ensemble, on improvise, on respire, on construit.<br />Et parfois, entre les répliques, il y a ce
+              silence précieux où quelque chose prend vie.<br />C’est peut être ça, le théâtre ,&nbsp; un lieu où chacun
+              vient comme il est, et repart un peu plus vivant.
+            </p>
+            <p>
+              Alors entrez, venez voir, venez jouer, venez rêver.<br />Ici, le spectacle commence bien avant que les
+              rideaux ne s’ouvrent.
+            </p>
+          </div>
+        </div>
+
+        <ul class="chiffres" role="list">
+          {
+            chiffres.map((c) => (
+              <li class="chiffre">
+                <Image class="chiffre__punaise" src={punaise} alt="" width={50} densities={[1, 2]} />
+                <p class="chiffre__valeur">{c.valeur}</p>
+                <p class="chiffre__libelle">{c.libelle}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── Trois portes, trois histoires ── -->
+    <section class="portes">
+      <div class="conteneur">
+        <hr class="portes__trait" />
+        <h2 class="portes__titre" data-anim="zoomIn">Trois portes, trois histoires</h2>
+
+        <ul class="portes__cartes" role="list">
+          {
+            portes.map((porte) => (
+              <li
+                class="carte"
+                data-anim="fadeInUp"
+                style={porte.delai ? `--anim-delai: ${porte.delai}ms` : undefined}
+              >
+                <Image class="carte__image" src={porte.image} alt="" widths={[420, 700]} sizes="(max-width: 767px) 100vw, 420px" />
+                <div class="carte__contenu">
+                  <h3>{porte.titre}</h3>
+                  <p>{porte.texte}</p>
+                  <a class="carte__lien" href={porte.href}>
+                    En savoir plus<span class="visuellement-cache"> : {porte.titre}</span>
+                  </a>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── Troupe semi-professionnelle ── -->
+    <section class="troupe">
+      <div class="conteneur troupe__grille">
+        <div class="troupe__texte">
+          <h2>Une troupe de théâtre semi-professionnelle</h2>
+          <p>
+            Chaque semaine, on se retrouve pour jouer, progresser, rire, créer. Nos cours de théâtre sont ouverts à
+            toutes et à tous, que vous soyez débutant curieux ou comédien confirmé.<br />Nous explorons ensemble ce que le
+            théâtre a de plus vivant à offrir.
+          </p>
+          <p>
+            Alors si vous avez envie de jouer, de vous dépasser ou simplement de tenter l’expérience, il y a peut-être une
+            place pour vous parmi nous.
+          </p>
+          <div class="troupe__action">
+            <a class="bouton bouton--jaune troupe__bouton" href="/contact/">Je prends contact</a>
+          </div>
+        </div>
+        <div class="troupe__illustration">
+          <Image src={troupeSemiPro} alt="" />
+        </div>
+      </div>
+    </section>
+  </main>
 </Layout>
+
+<style>
+  .conteneur {
+    width: 100%;
+    max-width: 1312px;
+    margin: 0 auto;
+  }
+
+  /* ── Ouverture ── */
+  .ouverture {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    height: 651px;
+    padding: 60px 30px;
+    overflow: hidden;
+    background: #333 center / cover no-repeat;
+  }
+
+  .ouverture__video,
+  .ouverture__voile {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ouverture__video {
+    object-fit: cover;
+  }
+
+  .ouverture__voile {
+    background: rgba(95, 95, 95, 0.47);
+    opacity: 0.8;
+  }
+
+  .ouverture__contenu {
+    position: relative;
+    width: 100%;
+  }
+
+  .ouverture h1 {
+    margin: 0 0 50px;
+    font-size: 80px;
+    line-height: 80px;
+    letter-spacing: -2px;
+    color: var(--blanc);
+    text-transform: none;
+  }
+
+  .ouverture p {
+    margin: 0 0 64px;
+    font-size: 20px;
+    line-height: 34px;
+    color: var(--blanc);
+  }
+
+  /* ── Présentation ── */
+  .presentation {
+    padding: 50px 30px 100px;
+  }
+
+  .presentation__grille {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .presentation__texte {
+    position: relative;
+    flex: 0 0 67%;
+    padding-right: 30px;
+  }
+
+  .presentation__media video {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 39px;
+    border: 4px solid var(--jaune);
+    border-radius: 10px;
+    box-shadow: rgb(173 173 173 / 50%) 0 0 9px 1px;
+    object-fit: contain;
+  }
+
+  /* Flèche : reprend le positionnement Elementor (bloc de 68 % de large, décalé de 60 % de sa largeur). */
+  .presentation__fleche {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 68%;
+    pointer-events: none;
+  }
+
+  .presentation__fleche > div {
+    padding-top: 60%;
+  }
+
+  .presentation__fleche img {
+    width: 11%;
+    height: auto;
+  }
+
+  .presentation__paragraphes p {
+    margin: 0 0 14.4px;
+    font-size: 19px;
+    line-height: 28.5px;
+    color: var(--gris-texte);
+  }
+
+  .chiffres {
+    flex: 1;
+    margin: 0;
+    padding: 26px 0 25px 20px;
+    list-style: none;
+  }
+
+  .chiffre {
+    position: relative;
+    margin-bottom: 50px;
+    padding: 30px 50px;
+    border-radius: 20px;
+    background: rgb(255 237 0 / 55%);
+    text-align: center;
+  }
+
+  .chiffre__punaise {
+    position: absolute;
+    top: -20px;
+    left: -18px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .chiffre p {
+    margin: 0;
+    font-family: var(--fonte-titre);
+  }
+
+  .chiffre__valeur {
+    margin-bottom: 20px !important;
+    font-size: 63px;
+    line-height: 63px;
+    color: var(--vert);
+  }
+
+  .chiffre__libelle {
+    font-size: 24px;
+    line-height: 36px;
+    color: var(--nuit);
+  }
+
+  /* ── Trois portes ── */
+  .portes {
+    margin-top: -100px;
+    padding: 0 30px 60px;
+  }
+
+  .portes__trait {
+    width: 388px;
+    max-width: 100%;
+    margin: 15px auto 45px;
+    border: 0;
+    border-top: 1px solid var(--nuit);
+  }
+
+  .portes__titre {
+    max-width: 1078px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+    font-size: 52px;
+    line-height: 52px;
+    letter-spacing: -2px;
+    text-align: center;
+  }
+
+  .portes__cartes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin: -40px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .carte {
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--blanc);
+    box-shadow: 0 50px 100px 0 rgb(111 104 146 / 10%);
+  }
+
+  .carte__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 30px;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .carte__contenu {
+    padding: 0 30px 40px;
+  }
+
+  .carte h3 {
+    margin: 0 0 15px;
+    font-size: 24px;
+    line-height: 1.4;
+    letter-spacing: -1px;
+    text-align: left;
+  }
+
+  .carte p {
+    margin: 0 0 20px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--gris-texte);
+  }
+
+  .carte__lien {
+    display: inline-block;
+    margin-top: 5px;
+    font-family: var(--fonte-titre);
+    font-size: 16px;
+    line-height: 16px;
+    color: var(--gris-texte);
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+  }
+
+  .carte__lien:hover {
+    color: var(--vert);
+  }
+
+  /* ── Troupe semi-professionnelle ── */
+  .troupe {
+    padding: 70px 30px;
+    background: var(--noir);
+  }
+
+  .troupe__grille {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+
+  .troupe__texte {
+    max-width: 576px;
+  }
+
+  .troupe h2 {
+    margin: 0 0 30px;
+    font-size: 41px;
+    line-height: 41px;
+    letter-spacing: -2px;
+    color: var(--blanc);
+  }
+
+  .troupe p {
+    margin: 0 0 40px;
+    font-size: 18px;
+    line-height: 27px;
+    color: var(--blanc);
+  }
+
+  .troupe__illustration img {
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  /* ── Tablette ── */
+  @media (max-width: 1024px) {
+    .ouverture__bouton {
+      font-size: 16px;
+      padding: 19px 30px;
+    }
+
+    .presentation__fleche { width: 72%; }
+    .presentation__fleche > div { padding-top: 58%; }
+
+    .chiffre {
+      margin-bottom: 40px;
+      padding: 25px 30px;
+    }
+
+    .carte__image { margin-bottom: 20px; }
+    .carte__contenu { padding: 0 20px 30px; }
+    .carte h3 { margin-bottom: 10px; font-size: 20px; line-height: 1.2; }
+    .carte p { margin-bottom: 15px; font-size: 14px; }
+    .carte__lien { font-size: 14px; }
+
+    .portes__titre { max-width: 560px; padding-bottom: 50px; }
+
+    .troupe__action { padding-top: 30px; }
+    .troupe__bouton { font-size: 16px; padding: 16px 26px; }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 767px) {
+    .ouverture {
+      height: 580px;
+      padding: 100px 20px 40px;
+    }
+
+    .ouverture h1 {
+      margin-bottom: 30px;
+      font-size: 37px;
+      line-height: 1.1;
+    }
+
+    .ouverture p {
+      margin-bottom: 44px;
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    .ouverture__contenu {
+      padding-bottom: 20px;
+    }
+
+    .ouverture__bouton {
+      padding: 18px 22px;
+    }
+
+    .presentation {
+      margin-top: -23px;
+      padding: 70px 20px 35px;
+    }
+
+    .presentation__grille {
+      display: block;
+    }
+
+    .presentation__texte {
+      padding: 0;
+    }
+
+    .presentation__fleche {
+      top: 1px;
+      left: -1px;
+      width: 100%;
+    }
+
+    .presentation__fleche > div {
+      padding-top: 42%;
+    }
+
+    .presentation__paragraphes {
+      margin-bottom: 44px;
+    }
+
+    .presentation__paragraphes p {
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    .chiffres {
+      display: none;
+    }
+
+    .portes {
+      padding: 35px 20px 70px;
+    }
+
+    .portes__trait {
+      width: 233px;
+      margin-top: 35px;
+      margin-bottom: 15px;
+    }
+
+    .portes__titre {
+      padding-bottom: 80px;
+      font-size: 25px;
+      line-height: 25px;
+    }
+
+    .portes__cartes {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .carte {
+      min-height: 443px;
+    }
+
+    .troupe {
+      margin-top: -20px;
+      padding: 48px 20px 30px;
+    }
+
+    .troupe__grille {
+      grid-template-columns: 1fr;
+    }
+
+    .troupe h2 {
+      margin-bottom: 25px;
+      font-size: 26px;
+      line-height: 26px;
+    }
+
+    .troupe p {
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 19.5px;
+    }
+
+    .troupe__action {
+      text-align: center;
+    }
+
+    .troupe__bouton {
+      font-size: 14px;
+    }
+
+    .troupe__illustration {
+      margin-top: 10px;
+    }
+  }
+</style>

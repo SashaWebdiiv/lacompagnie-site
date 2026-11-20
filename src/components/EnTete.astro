@@ -1,0 +1,357 @@
+---
+/**
+ * En-tête posé sur le haut de page (logo, menu, bouton Billetterie) + bouton « hamburger »
+ * fixe qui ouvre le menu plein écran. Sur ordinateur, le hamburger n'apparaît qu'après
+ * 400 px de défilement, comme sur l'ancien site.
+ */
+import { Image } from "astro:assets";
+import logo from "../assets/commun/logo.png";
+import { navigation, navigationPleinEcran, site } from "../data/site";
+
+const chemin = Astro.url.pathname;
+const estActif = (href: string) => (href === "/" ? chemin === "/" : chemin.startsWith(href));
+---
+
+<header class="entete">
+  <a class="entete__logo" href="/" aria-label={`${site.nom} — accueil`}>
+    <Image src={logo} alt={site.nom} width={166} densities={[1, 2]} loading="eager" />
+  </a>
+
+  <nav class="entete__nav" aria-label="Menu principal">
+    <ul>
+      {
+        navigation.map((lien) => (
+          <li>
+            <a href={lien.href} aria-current={estActif(lien.href) ? "page" : undefined}>
+              {lien.libelle}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <a class="entete__billetterie" href="/billetterie/">
+    <svg aria-hidden="true" viewBox="0 0 576 512"
+      ><path
+        d="M128 160h320v192H128V160zm400 96c0 26.51 21.49 48 48 48v96c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48v-96c26.51 0 48-21.49 48-48s-21.49-48-48-48v-96c0-26.51 21.49-48 48-48h480c26.51 0 48 21.49 48 48v96c-26.51 0-48 21.49-48 48zm-48-104c0-13.255-10.745-24-24-24H120c-13.255 0-24 10.745-24 24v208c0 13.255 10.745 24 24 24h336c13.255 0 24-10.745 24-24V152z"
+      ></path></svg
+    >
+    <span>Billetterie</span>
+  </a>
+</header>
+
+<button class="hamburger" type="button" aria-expanded="false" aria-controls="menu-plein-ecran" aria-label="Ouvrir le menu">
+  <span></span>
+</button>
+
+<div class="menu-plein-ecran" id="menu-plein-ecran" hidden>
+  <nav aria-label="Menu">
+    <ul>
+      {
+        navigationPleinEcran.map((lien) => (
+          <li>
+            <a href={lien.href}>{lien.libelle}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</div>
+
+<script>
+  const bouton = document.querySelector<HTMLButtonElement>(".hamburger")!;
+  const menu = document.querySelector<HTMLElement>("#menu-plein-ecran")!;
+
+  const basculer = (ouvrir: boolean) => {
+    bouton.setAttribute("aria-expanded", String(ouvrir));
+    bouton.setAttribute("aria-label", ouvrir ? "Fermer le menu" : "Ouvrir le menu");
+    document.documentElement.classList.toggle("menu-ouvert", ouvrir);
+    if (ouvrir) {
+      menu.hidden = false;
+      requestAnimationFrame(() => menu.classList.add("est-ouvert"));
+    } else {
+      menu.classList.remove("est-ouvert");
+      // On masque le menu une fois l'animation de fermeture (0,7 s) terminée.
+      window.setTimeout(() => (menu.hidden = !menu.classList.contains("est-ouvert")), 700);
+    }
+  };
+
+  bouton.addEventListener("click", () => basculer(bouton.getAttribute("aria-expanded") !== "true"));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && bouton.getAttribute("aria-expanded") === "true") basculer(false);
+  });
+
+  // Le hamburger apparaît après 400 px de défilement (ordinateur uniquement, voir CSS).
+  const majDefilement = () => document.body.classList.toggle("a-defile", window.scrollY > 400);
+  majDefilement();
+  window.addEventListener("scroll", majDefilement, { passive: true });
+</script>
+
+<style>
+  /* ── En-tête ── */
+  /* Posé en absolu au-dessus du haut de page (vidéo, image), comme sur l'ancien site. */
+  .entete {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    width: min(100% - 70px, 1370px);
+    height: 115px;
+    margin: 0 auto;
+    padding: 10px 20px 11px;
+  }
+
+  .entete__logo {
+    flex: 0 0 25%;
+    padding: 10px;
+  }
+
+  .entete__logo img {
+    width: 166px;
+    height: auto;
+  }
+
+  .entete__nav {
+    flex: 1;
+    margin-top: 24px;
+  }
+
+  .entete__nav ul {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .entete__nav li {
+    margin: 0 10px;
+  }
+
+  .entete__nav li:first-child { margin-left: 0; }
+  .entete__nav li:last-child { margin-right: 0; }
+
+  .entete__nav a {
+    position: relative;
+    display: block;
+    padding: 15px 0;
+    font-family: var(--fonte-titre);
+    font-size: 17px;
+    line-height: 17px;
+    color: var(--blanc);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .entete__nav a:hover,
+  .entete__nav a[aria-current="page"] {
+    color: var(--jaune);
+  }
+
+  .entete__billetterie {
+    position: absolute;
+    top: 32px;
+    right: 42px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 17px 30px;
+    background: var(--jaune);
+    color: var(--noir);
+    font-family: var(--fonte-titre);
+    font-size: 17px;
+    line-height: 21px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .entete__billetterie svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+  }
+
+  .entete__billetterie:hover {
+    background: var(--noir);
+    color: var(--blanc);
+  }
+
+  /* ── Hamburger ── */
+  .hamburger {
+    position: fixed;
+    top: 36px;
+    right: 36px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    padding: 15px;
+    border: 0;
+    background: var(--jaune);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease-in-out, background-color 0.4s;
+  }
+
+  :global(body.a-defile) .hamburger,
+  :global(html.menu-ouvert) .hamburger,
+  .hamburger:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (hover: hover) {
+    .hamburger:hover {
+      background: var(--noir);
+    }
+
+    .hamburger:hover span,
+    .hamburger:hover span::before,
+    .hamburger:hover span::after {
+      background: var(--blanc);
+    }
+  }
+
+  .hamburger span,
+  .hamburger span::before,
+  .hamburger span::after {
+    display: block;
+    width: 30px;
+    height: 2px;
+    background: var(--noir);
+    transition: all 0.4s ease;
+  }
+
+  .hamburger span {
+    position: relative;
+  }
+
+  .hamburger span::before,
+  .hamburger span::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -10px;
+  }
+
+  .hamburger span::after {
+    top: 10px;
+  }
+
+  .hamburger[aria-expanded="true"] span {
+    transform: rotate(135deg);
+  }
+
+  .hamburger[aria-expanded="true"] span::before,
+  .hamburger[aria-expanded="true"] span::after {
+    top: 0;
+    transform: rotate(90deg);
+  }
+
+  .hamburger[aria-expanded="true"] span::after {
+    opacity: 0;
+  }
+
+  /* ── Menu plein écran ── */
+  .menu-plein-ecran {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    background: var(--noir);
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .menu-plein-ecran.est-ouvert {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu-plein-ecran ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .menu-plein-ecran.est-ouvert ul {
+    opacity: 1;
+    transition-delay: 0.4s;
+  }
+
+  .menu-plein-ecran li {
+    margin: 2px;
+  }
+
+  .menu-plein-ecran a {
+    font-family: var(--fonte-titre);
+    font-size: 52px;
+    line-height: 78px;
+    color: var(--blanc);
+    text-decoration: none;
+    transition: color 0.4s;
+  }
+
+  .menu-plein-ecran a:hover {
+    color: var(--jaune);
+  }
+
+  :global(html.menu-ouvert),
+  :global(html.menu-ouvert body) {
+    overflow: hidden;
+  }
+
+  /* ── Tablette et mobile : logo seul + hamburger toujours visible ── */
+  @media (max-width: 1024px) {
+    .entete {
+      width: 100%;
+      height: auto;
+      padding: 0;
+    }
+
+    .entete__logo {
+      flex: none;
+      padding: 22px;
+    }
+
+    .entete__logo img {
+      width: 180px;
+    }
+
+    .entete__nav,
+    .entete__billetterie {
+      display: none;
+    }
+
+    .hamburger {
+      top: 33px;
+      right: 33px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-plein-ecran,
+    .menu-plein-ecran ul,
+    .hamburger span,
+    .hamburger span::before,
+    .hamburger span::after {
+      transition: none;
+    }
+  }
+</style>
