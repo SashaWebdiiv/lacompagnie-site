@@ -1,0 +1,23 @@
+---
+/** Contenu provisoire, remplacé page par page pendant l'intégration. */
+interface Props {
+  titre: string;
+}
+const { titre } = Astro.props;
+---
+
+<main class="provisoire">
+  <h1>{titre}</h1>
+  <p>Page en cours de migration depuis WordPress.</p>
+</main>
+
+<style>
+  .provisoire {
+    min-height: 100vh;
+    display: grid;
+    place-content: center;
+    gap: 1rem;
+    padding: var(--marge-mobile);
+    text-align: center;
+  }
+</style>

@@ -1,0 +1,55 @@
+/* ── Jetons de design — relevés sur le site WordPress (kit Elementor + pages) ── */
+@font-face {
+  font-family: "Lovelo";
+  src: url("/fonts/Lovelo-Black.otf") format("opentype");
+  font-weight: 900;
+  font-display: swap;
+}
+
+:root {
+  /* Couleurs */
+  --jaune: #ffed00;          /* couleur du logo */
+  --jaune-voile: #ffed008c;  /* fond des chiffres clés */
+  --nuit: #271e59;           /* titres */
+  --vert: #0ebd9e;           /* chiffres clés */
+  --bordeaux: #93032e;       /* boutons */
+  --bordeaux-fonce: #761212;
+  --gris-texte: #707a8c;
+  --gris-fonce: #333333;
+  --noir: #000000;
+  --blanc: #ffffff;
+
+  /* Typos */
+  --fonte-titre: "Lovelo", "Poppins", system-ui, sans-serif;
+  --fonte-texte: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fonte-ui: "Poppins", system-ui, sans-serif;
+  --fonte-accent: "Syne", system-ui, sans-serif;
+
+  /* Gabarit */
+  --largeur-contenu: 1140px;
+  --marge-mobile: 20px;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--blanc);
+  color: var(--gris-texte);
+  font-family: var(--fonte-texte);
+  line-height: 1.6;
+}
+
+img,
+video,
+svg { display: block; max-width: 100%; height: auto; }
+
+h1,
+h2,
+h3 { font-family: var(--fonte-titre); color: var(--nuit); text-transform: uppercase; margin: 0; }
+
+a { color: inherit; }
