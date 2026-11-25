@@ -5,7 +5,8 @@ import "@fontsource/dm-sans/400-italic.css";
 import "../styles/global.css";
 import EnTete from "../components/EnTete.astro";
 import PiedDePage from "../components/PiedDePage.astro";
-import { site, seo, type CleSeo } from "../data/site";
+import Consentement from "../components/Consentement.astro";
+import { site, seo, mesure, type CleSeo } from "../data/site";
 
 interface Props {
   page: CleSeo;
@@ -42,12 +43,14 @@ const canonique = new URL(Astro.url.pathname, site.url).href;
     <meta property="og:url" content={canonique} />
     <meta property="og:image" content={new URL(image, site.url).href} />
     <meta name="twitter:card" content="summary_large_image" />
+    {mesure.searchConsole && <meta name="google-site-verification" content={mesure.searchConsole} />}
   </head>
 
   <body>
     <EnTete />
     <slot />
     <PiedDePage />
+    <Consentement />
 
     <script>
       // Animations d'apparition au défilement (reprises d'Elementor : fadeInUp, zoomIn…).

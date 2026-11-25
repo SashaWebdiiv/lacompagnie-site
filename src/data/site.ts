@@ -37,6 +37,18 @@ export const liensLegaux = [
   { libelle: "Politique de cookies", href: "/politique-de-cookies/" },
 ];
 
+/**
+ * Mesure d'audience et Search Console.
+ * - ga4 : identifiant de mesure Google Analytics 4 (« G-XXXXXXXXXX »). Vide = aucun suivi ni bannière cookies.
+ *   Peut aussi être fourni par la variable d'environnement PUBLIC_GA4_ID.
+ * - searchConsole : contenu de la balise de validation Google Search Console (méthode « Balise HTML »),
+ *   inutile si la propriété est validée par DNS.
+ */
+export const mesure = {
+  ga4: (import.meta.env.PUBLIC_GA4_ID as string | undefined) ?? "",
+  searchConsole: "",
+};
+
 /** Titres et descriptions SEO, repris tels quels de Yoast. */
 export const seo = {
   accueil: {

@@ -1,10 +1,10 @@
 ---
 /**
  * Pied de page : dégradé jaune animé, adresse, liens légaux, Instagram.
- * Les liens « Espace élèves » et « Gérer les cookies » de l'ancien site sont retirés
- * (espace élèves abandonné, plus de bannière cookies).
+ * Le lien « Espace élèves » de l'ancien site est retiré (espace élèves abandonné).
+ * « Gérer les cookies » n'apparaît que si Google Analytics est configuré.
  */
-import { liensLegaux, site } from "../data/site";
+import { liensLegaux, mesure, site } from "../data/site";
 
 const annee = new Date().getFullYear();
 ---
@@ -32,6 +32,16 @@ const annee = new Date().getFullYear();
                 <a href={lien.href}>{lien.libelle}</a>
               </>
             ))
+          }
+          {
+            mesure.ga4 && (
+              <>
+                {" – "}
+                <button type="button" class="pied__lien-bouton" data-ouvrir-consentement>
+                  Gérer les cookies
+                </button>
+              </>
+            )
           }
         </p>
       </div>
@@ -106,8 +116,18 @@ const annee = new Date().getFullYear();
     text-decoration: none;
   }
 
-  .pied a:hover {
+  .pied a:hover,
+  .pied__lien-bouton:hover {
     text-decoration: underline;
+  }
+
+  .pied__lien-bouton {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
   }
 
   .pied__reseaux {
