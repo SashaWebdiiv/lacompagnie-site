@@ -1,8 +1,394 @@
 ---
+import { getImage } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import bandeau from "../assets/billetterie/festival-bandeau.png";
+import bandeauMobile from "../assets/billetterie/festival-bandeau-mobile.png";
+import { faq, reservation } from "../data/billetterie";
+
+// Le visuel est affiché en mosaïque à 653 px (745 px sur mobile) : inutile de servir plus large.
+const fond = await getImage({ src: bandeau, width: 1306, format: "webp" });
+const fondMobile = await getImage({ src: bandeauMobile, width: 1490, format: "webp" });
+
+const texteDefilant = Array(8).fill("PRENDS TA PLACE ▼").join(" ");
+const plus =
+  "M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z";
+const moins =
+  "M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z";
 ---
 
-<Layout page="billetterie">
-  <EnConstruction titre="Billetterie" />
+<Layout page="billetterie" entete="clair">
+  <main>
+    <h1 class="visuellement-cache">Billetterie</h1>
+
+    <!-- ── Spectacle en cours ── -->
+    <section class="spectacle-billet" style={`--fond: url('${fond.src}'); --fond-mobile: url('${fondMobile.src}')`}>
+      <a class="spectacle-billet__visuel" href={reservation} target="_blank" rel="noopener">
+        <span class="visuellement-cache">Festival Improvisé, dimanche 14 juin : réserver ma place (nouvel onglet)</span>
+      </a>
+
+      <div class="defilant defilant--jaune" aria-hidden="true">
+        <div class="defilant__piste">
+          <span>{texteDefilant}</span><span>{texteDefilant}</span>
+        </div>
+      </div>
+
+      <div class="spectacle-billet__bas">
+        <div class="defilant defilant--noir" aria-hidden="true">
+          <div class="defilant__piste">
+            <span>{texteDefilant}</span><span>{texteDefilant}</span>
+          </div>
+        </div>
+        <div class="spectacle-billet__action">
+          <a class="bouton bouton--bordeaux" href={reservation} target="_blank" rel="noopener">Je reserve ma place</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Foire aux questions ── -->
+    <section class="faq" id="faq">
+      <div class="faq__boite">
+        <div class="faq__titre">
+          <h2>Foire aux questions billetterie</h2>
+          <div class="faq__animation" data-lottie="/animations/interrogation.json" aria-hidden="true"></div>
+        </div>
+
+        <div class="accordeon">
+          {
+            faq.map((q, i) => (
+              <div class="accordeon__item">
+                <h3>
+                  <button
+                    class="accordeon__bouton"
+                    type="button"
+                    id={`faq-q${i}`}
+                    aria-expanded={i === 0 ? "true" : "false"}
+                    aria-controls={`faq-r${i}`}
+                  >
+                    <svg class="accordeon__icone" viewBox={q.icone.viewBox} aria-hidden="true">
+                      <path d={q.icone.d} />
+                    </svg>
+                    <span class="accordeon__titre">{q.titre}</span>
+                    <svg class="accordeon__signe accordeon__signe--plus" viewBox="0 0 448 512" aria-hidden="true">
+                      <path d={plus} />
+                    </svg>
+                    <svg class="accordeon__signe accordeon__signe--moins" viewBox="0 0 448 512" aria-hidden="true">
+                      <path d={moins} />
+                    </svg>
+                  </button>
+                </h3>
+                <div class="accordeon__panneau" id={`faq-r${i}`} role="region" aria-labelledby={`faq-q${i}`}>
+                  <div class="accordeon__reponse" set:html={q.reponse} />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </main>
 </Layout>
+
+<script>
+  // ── Accordéon : une seule réponse ouverte à la fois (comme avant), ouverture en 0,2 s. ──
+  const boutons = [...document.querySelectorAll<HTMLButtonElement>(".accordeon__bouton")];
+  const panneau = (b: HTMLButtonElement) => document.getElementById(b.getAttribute("aria-controls")!)!;
+  const regler = (b: HTMLButtonElement, ouvert: boolean) => {
+    b.setAttribute("aria-expanded", String(ouvert));
+    const p = panneau(b);
+    p.style.maxHeight = ouvert ? `${p.scrollHeight}px` : "0px";
+  };
+  boutons.forEach((b) => {
+    regler(b, b.getAttribute("aria-expanded") === "true");
+    b.addEventListener("click", () => {
+      const ouvrir = b.getAttribute("aria-expanded") !== "true";
+      boutons.forEach((autre) => regler(autre, autre === b ? ouvrir : false));
+    });
+  });
+  window.addEventListener("resize", () => boutons.forEach((b) => b.getAttribute("aria-expanded") === "true" && regler(b, true)));
+
+  // ── Animation « ? » (Lottie), chargée et lancée quand elle arrive à l'écran, en boucle. ──
+  const zone = document.querySelector<HTMLElement>("[data-lottie]");
+  if (zone && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const observateur = new IntersectionObserver(async ([entree]) => {
+      if (!entree.isIntersecting) return;
+      observateur.disconnect();
+      const { default: lottie } = await import("lottie-web/build/player/lottie_light");
+      lottie.loadAnimation({ container: zone, renderer: "svg", loop: true, autoplay: true, path: zone.dataset.lottie });
+    });
+    observateur.observe(zone);
+  }
+</script>
+
+<style>
+  /* ── Spectacle en cours ── */
+  .spectacle-billet {
+    position: relative;
+    max-width: 1372px;
+    margin: 0 auto;
+    padding: 20px 30px 200px;
+    background: var(--blanc);
+  }
+
+  .spectacle-billet__visuel {
+    display: block;
+    height: 285px;
+    border-radius: 10px 10px 0 0;
+    background: #000 var(--fond) 630px 2px / 653px auto repeat;
+  }
+
+  .defilant {
+    overflow: hidden;
+    padding: 10px 0;
+  }
+
+  .defilant__piste {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    font-family: var(--fonte-titre);
+    font-size: 15px;
+    line-height: 15px;
+    white-space: nowrap;
+    animation: defile-gauche 23.8s linear infinite;
+  }
+
+  .defilant--jaune {
+    background: var(--jaune);
+    color: var(--noir);
+  }
+
+  .defilant--noir {
+    color: var(--jaune);
+  }
+
+  .defilant--noir .defilant__piste {
+    animation-name: defile-droite;
+  }
+
+  /* Deux copies identiques : décaler d'une copie (50 % moins la moitié de l'écart) boucle sans couture. */
+  @keyframes defile-gauche {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-50% - 10px)); }
+  }
+
+  @keyframes defile-droite {
+    from { transform: translateX(calc(-50% - 10px)); }
+    to { transform: translateX(0); }
+  }
+
+  .spectacle-billet__bas {
+    background: var(--noir);
+  }
+
+  .spectacle-billet__action {
+    padding: 20px;
+    text-align: center;
+  }
+
+  /* ── FAQ ── */
+  .faq {
+    position: relative;
+    max-width: 1372px;
+    margin: -220px auto 0;
+    padding: 100px 30px 80px;
+  }
+
+  .faq__boite {
+    display: flex;
+    overflow: hidden;
+    border: 1px solid #cacaca;
+    border-radius: 10px;
+    background: #cbb2c8;
+    box-shadow: rgb(97 97 97 / 50%) 0 22px 70px 4px;
+  }
+
+  .faq__titre {
+    flex: 0 0 354px;
+    padding: 20px;
+    background: var(--noir);
+    text-align: center;
+  }
+
+  .faq__titre h2 {
+    padding: 20px 0 0;
+    font-size: 40px;
+    line-height: 40px;
+    color: var(--jaune);
+  }
+
+  .faq__animation {
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+  }
+
+  /* 6 px entre deux questions et autour d'une réponse ouverte, comme l'accordéon d'origine. */
+  .accordeon {
+    flex: 1;
+    padding: 21px 20px 26px;
+  }
+
+  .accordeon__item {
+    padding-top: 6px;
+  }
+
+  .accordeon h3 {
+    margin: 0;
+    font: inherit;
+    text-transform: none;
+  }
+
+  .accordeon__bouton {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 18px;
+    border: 0;
+    background: transparent;
+    color: var(--noir);
+    font: 700 15px/22.5px var(--fonte-texte);
+    min-height: 59.64px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .accordeon__bouton[aria-expanded="true"] {
+    background: var(--blanc);
+  }
+
+  .accordeon__icone {
+    flex: none;
+    width: 23px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  .accordeon__titre {
+    flex: 1;
+    padding-left: 38px;
+  }
+
+  .accordeon__signe {
+    flex: none;
+    width: 15px;
+    height: 17px;
+    margin-left: 16px;
+    fill: currentColor;
+  }
+
+  .accordeon__bouton[aria-expanded="true"] .accordeon__signe--plus,
+  .accordeon__bouton[aria-expanded="false"] .accordeon__signe--moins {
+    display: none;
+  }
+
+  .accordeon__panneau {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+  }
+
+  .accordeon__reponse {
+    padding: 31px 25px 25px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--noir);
+  }
+
+  .accordeon__reponse :global(p) {
+    margin: 0 0 14.4px;
+  }
+
+  .accordeon__reponse :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .accordeon__reponse :global(a) {
+    color: #cc3366;
+  }
+
+  .accordeon__reponse :global(.emoji) {
+    display: inline;
+    width: 1em;
+    height: 1em;
+    margin: 0 0.07em;
+    vertical-align: -0.1em;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 767px) {
+    .spectacle-billet {
+      margin: 10px auto;
+      padding: 0 15px;
+    }
+
+    .spectacle-billet__visuel {
+      height: 111px;
+      background-image: var(--fond-mobile);
+      background-position: -184px 2px;
+      background-size: 745px auto;
+    }
+
+    .defilant--jaune {
+      display: none;
+    }
+
+    .spectacle-billet__action .bouton {
+      padding: 18px 22px;
+      font-size: 16px;
+    }
+
+    .faq {
+      margin: 60px auto 40px;
+      padding: 15px;
+    }
+
+    .faq__boite {
+      flex-direction: column;
+    }
+
+    .faq__titre {
+      display: flex;
+      flex: none;
+      flex-direction: row-reverse;
+      align-items: center;
+      justify-content: center;
+      gap: 19px;
+      padding-bottom: 27px;
+      border-radius: 10px 10px 0 0;
+      text-align: left;
+    }
+
+    .faq__titre h2 {
+      max-width: 172px;
+      padding: 0;
+      font-size: 25px;
+      line-height: 25px;
+    }
+
+    .faq__animation {
+      flex: none;
+      width: 72px;
+      height: 72px;
+      margin: 0;
+    }
+
+    .accordeon {
+      padding: 0 0 6px;
+    }
+
+    .accordeon__titre {
+      padding-left: 19px;
+    }
+
+    .accordeon__signe {
+      margin-left: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .defilant__piste { animation: none; }
+    .accordeon__panneau { transition: none; }
+  }
+</style>
