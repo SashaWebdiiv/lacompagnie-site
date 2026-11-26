@@ -24,6 +24,8 @@ Chaque push sur `main` est déployé par Vercel.
 | `src/styles/global.css` | Jetons de design (couleurs, polices) relevés sur l'ancien site |
 | `src/pages/` | Une page par adresse de l'ancien site |
 | `public/fonts/` | Police de titre Lovelo Black |
+| `src/pages/api/contact.ts` | Fonction Vercel qui envoie le formulaire de contact par e-mail (Resend) |
+| `docs/formulaire-contact.md` | Mise en service du formulaire : compte Resend, DNS, variables Vercel |
 | `vercel.json` | Redirections permanentes des anciennes adresses WordPress (espace élèves, connexion…) |
 
 ## Adresses

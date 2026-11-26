@@ -1,8 +1,419 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import { limites, motifs } from "../data/contact";
 ---
 
-<Layout page="contact">
-  <EnConstruction titre="Contact" />
+<Layout page="contact" entete="clair">
+  <main class="contact">
+    <h1>Dites-nous tout !</h1>
+
+    <div class="formulaire">
+      <p class="formulaire__intro">Une question, un problème, ou juste envie de découvrir l’asso ? On vous écoute !</p>
+
+      <form class="formulaire__form" action="/api/contact/" method="post" novalidate>
+        <div class="champ">
+          <label for="motif">Motif de votre demande</label>
+          <select id="motif" name="motif" required aria-required="true">
+            <option value="">Sélectionnez un motif de contact</option>
+            {motifs.map((m) => <option value={m}>{m}</option>)}
+          </select>
+        </div>
+
+        <div class="champs-duo">
+          <div class="champ">
+            <label for="prenom">Prénom</label>
+            <input
+              id="prenom"
+              name="prenom"
+              type="text"
+              placeholder="Prénom"
+              autocomplete="given-name"
+              maxlength={limites.prenom}
+              required
+              aria-required="true"
+            />
+          </div>
+          <div class="champ">
+            <label for="nom">Nom</label>
+            <input
+              id="nom"
+              name="nom"
+              type="text"
+              placeholder="Nom"
+              autocomplete="family-name"
+              maxlength={limites.nom}
+              required
+              aria-required="true"
+            />
+          </div>
+        </div>
+
+        <div class="champ">
+          <label for="email">Adresse e-mail</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Adresse e-mail"
+            autocomplete="email"
+            maxlength={limites.email}
+            required
+            aria-required="true"
+          />
+        </div>
+
+        <div class="champ">
+          <label for="telephone">Numéro de téléphone</label>
+          <input
+            id="telephone"
+            name="telephone"
+            type="tel"
+            placeholder="Numéro de téléphone"
+            autocomplete="tel"
+            maxlength={limites.telephone}
+          />
+        </div>
+
+        <div class="champ">
+          <label for="objet">Objet du message</label>
+          <input
+            id="objet"
+            name="objet"
+            type="text"
+            placeholder="Objet du message"
+            maxlength={limites.objet}
+            required
+            aria-required="true"
+          />
+        </div>
+
+        <div class="champ champ--message">
+          <label for="message">Votre message</label>
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Votre message"
+            maxlength={limites.message}
+            required
+            aria-required="true"></textarea>
+        </div>
+
+        <!-- Piège à robots : invisible pour les personnes, rempli par les robots. -->
+        <div class="piege" aria-hidden="true">
+          <label for="site_web">Ne pas remplir ce champ</label>
+          <input id="site_web" name="site_web" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <input type="hidden" name="debut" value="" />
+
+        <div class="formulaire__espace"></div>
+
+        <p class="formulaire__erreur" role="alert" hidden></p>
+
+        <div class="formulaire__envoi">
+          <button type="submit">Envoyer</button>
+        </div>
+      </form>
+
+      <div class="formulaire__merci" role="status" tabindex="-1" hidden></div>
+    </div>
+  </main>
 </Layout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>(".formulaire__form")!;
+  const merci = document.querySelector<HTMLElement>(".formulaire__merci")!;
+  const erreurGenerale = form.querySelector<HTMLElement>(".formulaire__erreur")!;
+  const bouton = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+  const debut = form.querySelector<HTMLInputElement>("input[name=debut]")!;
+  debut.value = String(Date.now());
+
+  const OBLIGATOIRE = "Ce champ est obligatoire";
+  const emailValide = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  // Affiche ou retire l'erreur d'un champ, à la manière de l'ancien formulaire (texte rouge sous le champ).
+  const marquer = (nom: string, texte: string | null) => {
+    const controle = form.elements.namedItem(nom) as HTMLInputElement | null;
+    if (!controle) return;
+    const groupe = controle.closest(".champ")!;
+    groupe.querySelector(".champ__erreur")?.remove();
+    controle.toggleAttribute("aria-invalid", !!texte);
+    if (texte) {
+      const message = document.createElement("p");
+      message.className = "champ__erreur";
+      message.id = `${nom}-erreur`;
+      message.textContent = texte;
+      groupe.append(message);
+      controle.setAttribute("aria-describedby", message.id);
+    } else {
+      controle.removeAttribute("aria-describedby");
+    }
+  };
+
+  const valider = () => {
+    const d = new FormData(form);
+    const val = (n: string) => String(d.get(n) ?? "").trim();
+    const erreurs: Record<string, string> = {};
+    for (const n of ["motif", "prenom", "nom", "email", "objet", "message"]) if (!val(n)) erreurs[n] = OBLIGATOIRE;
+    if (val("email") && !emailValide(val("email"))) erreurs.email = "Cette adresse e-mail n’est pas valide";
+    return erreurs;
+  };
+
+  // Une fois l'erreur affichée, elle disparaît dès que le champ est corrigé.
+  form.addEventListener("input", (e) => {
+    const cible = e.target as HTMLInputElement;
+    if (!cible.hasAttribute("aria-invalid")) return;
+    marquer(cible.name, valider()[cible.name] ?? null);
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    erreurGenerale.hidden = true;
+    for (const n of ["motif", "prenom", "nom", "email", "objet", "message"]) marquer(n, null);
+
+    const erreurs = valider();
+    if (Object.keys(erreurs).length) {
+      for (const [n, t] of Object.entries(erreurs)) marquer(n, t);
+      (form.elements.namedItem(Object.keys(erreurs)[0]) as HTMLElement).focus();
+      return;
+    }
+
+    bouton.disabled = true;
+    bouton.textContent = "Envoi…";
+    try {
+      const corps = Object.fromEntries(new FormData(form));
+      const reponse = await fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(corps),
+      });
+      const resultat = await reponse.json().catch(() => ({}));
+      if (reponse.ok && resultat.ok) {
+        // Même message que l'ancien formulaire, qui remplaçait le formulaire.
+        merci.textContent = `Merci pour votre message, ${String(corps.prenom).trim()}. Nous revenons vers vous très bientôt !`;
+        form.hidden = true;
+        merci.hidden = false;
+        merci.focus();
+        return;
+      }
+      if (resultat.erreurs) {
+        for (const [n, t] of Object.entries(resultat.erreurs as Record<string, string>)) marquer(n, t);
+      } else {
+        throw new Error(resultat.erreur ?? "Erreur");
+      }
+    } catch {
+      erreurGenerale.textContent =
+        "Votre message n’a pas pu être envoyé. Réessayez dans un instant, ou écrivez-nous à hello@lacompagnie.net.";
+      erreurGenerale.hidden = false;
+    } finally {
+      bouton.disabled = false;
+      bouton.textContent = "Envoyer";
+    }
+  });
+</script>
+
+<style>
+  .contact {
+    padding: 30px 0 70px;
+  }
+
+  .contact h1 {
+    max-width: 890px;
+    margin: 0 auto 30px;
+    font-size: 60px;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: var(--noir);
+    text-align: center;
+  }
+
+  .formulaire {
+    max-width: 900px;
+    margin: 0 auto;
+    color: var(--gris-fonce);
+  }
+
+  /* Sur l'ancien site, le formulaire était centré dans un bloc de 1297 px : 7,5 px plus à gauche. */
+  @media (min-width: 1025px) {
+    .formulaire {
+      transform: translateX(-7.5px);
+    }
+  }
+
+  .formulaire__intro {
+    margin: 0;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+  }
+
+  /* Libellés présents pour les lecteurs d'écran ; l'ancien formulaire ne les affichait pas, il gardait leur place. */
+  .champ label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .champ {
+    position: relative;
+    padding-top: 24px;
+  }
+
+  .champs-duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14.5px;
+  }
+
+  .champ input,
+  .champ select,
+  .champ textarea {
+    display: block;
+    width: 100%;
+    height: 100px;
+    margin: 0;
+    padding: 40px;
+    border: 1px solid #dadfee;
+    border-radius: 10px;
+    background: transparent;
+    color: #9e9e9e;
+    font: 400 18px/1.1 var(--fonte-texte);
+    transition: border-color 0.2s;
+  }
+
+  .champ textarea {
+    height: 250px;
+    resize: vertical;
+  }
+
+  .champ ::placeholder {
+    color: #98a0b0;
+    opacity: 1;
+  }
+
+  /* Liste déroulante : double flèche à droite, comme l'ancien formulaire. */
+  .champ select {
+    appearance: none;
+    padding-right: 80px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 24'%3E%3Cpath fill='%23333' d='M7 0l7 10H0zM7 24L0 14h14z'/%3E%3C/svg%3E")
+      right 35px center / 14px 24px no-repeat;
+    cursor: pointer;
+  }
+
+  .champ input:focus,
+  .champ select:focus,
+  .champ textarea:focus {
+    border-color: var(--vert);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--vert);
+  }
+
+  .champ [aria-invalid] {
+    border-color: #f56c6c;
+  }
+
+  /* :global car ces messages sont créés par le script, après le rendu. */
+  .champ :global(.champ__erreur) {
+    margin: 4px 0 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #f56c6c;
+  }
+
+  .piege {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .formulaire__espace {
+    height: 48px;
+  }
+
+  .formulaire__erreur {
+    margin: 0 0 10px;
+    color: #f56c6c;
+    text-align: center;
+  }
+
+  .formulaire__envoi {
+    text-align: center;
+  }
+
+  .formulaire__envoi button {
+    margin-top: 30px;
+    padding: 20px 37px;
+    border: 1px solid transparent;
+    border-radius: 50px;
+    background: var(--vert);
+    color: var(--blanc);
+    font: 400 23px/1 var(--fonte-titre);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .formulaire__envoi button:hover {
+    opacity: 0.85;
+  }
+
+  .formulaire__envoi button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  .formulaire__merci {
+    margin-top: 10px;
+    padding: 15px;
+    border: 1px solid #ced4da;
+    box-shadow: 0 1px 5px rgb(0 0 0 / 10%);
+    color: var(--gris-fonce);
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 767px) {
+    .contact {
+      padding: 20px 20px 40px;
+    }
+
+    .contact h1 {
+      margin-bottom: 25px;
+      font-size: 30px;
+    }
+
+    .formulaire {
+      padding: 0 2px;
+    }
+
+    .champs-duo {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .champ input,
+    .champ select,
+    .champ textarea {
+      height: 69px;
+      padding: 20px;
+      font-size: 14px;
+    }
+
+    .champ select {
+      padding-right: 50px;
+      background-position: right 18px center;
+      background-size: 12px 20px;
+    }
+
+    .champ textarea {
+      height: 148px;
+    }
+
+    .formulaire__envoi button {
+      padding: 17px 30px;
+      font-size: 17px;
+    }
+  }
+</style>
