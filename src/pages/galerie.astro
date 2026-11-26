@@ -74,6 +74,8 @@ const rangees = [0, 2, 4, 6].map((i) => [i, i + 1]);
                       <Image
                         src={p.src}
                         alt={`La troupe en scène, photo ${i + 1}`}
+                        loading={i < 2 ? "eager" : "lazy"}
+                        fetchpriority={i < 2 ? "high" : "auto"}
                         widths={[400, 640, 1280]}
                         sizes="(max-width: 767px) 100vw, 636px"
                       />
@@ -91,7 +93,6 @@ const rangees = [0, 2, 4, 6].map((i) => [i, i + 1]);
       <button class="visionneuse__fermer" type="button" aria-label="Fermer (Échap)">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3l14 14M17 3L3 17"></path></svg>
       </button>
-      <img class="visionneuse__image" alt="" />
     </dialog>
   </main>
 </Layout>
@@ -151,7 +152,10 @@ const rangees = [0, 2, 4, 6].map((i) => [i, i + 1]);
 
   // ── Visionneuse : clic sur une photo pour l'agrandir ──
   const visionneuse = document.querySelector<HTMLDialogElement>(".visionneuse")!;
-  const grande = visionneuse.querySelector<HTMLImageElement>(".visionneuse__image")!;
+  // L'image est créée à la première ouverture (une balise <img> sans source n'est pas valide).
+  const grande = document.createElement("img");
+  grande.className = "visionneuse__image";
+  visionneuse.append(grande);
   document.querySelectorAll<HTMLAnchorElement>(".photo__lien").forEach((lien) => {
     lien.addEventListener("click", (e) => {
       e.preventDefault();
@@ -257,7 +261,7 @@ const rangees = [0, 2, 4, 6].map((i) => [i, i + 1]);
     place-items: center;
   }
 
-  .visionneuse__image {
+  :global(.visionneuse__image) {
     max-width: 85vw;
     max-height: 85vh;
     animation: zoomIn 0.5s both;

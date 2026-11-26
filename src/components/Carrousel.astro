@@ -26,10 +26,10 @@ const optimisees = await Promise.all(
 
 <div class:list={["carrousel", classe]} role="region" aria-roledescription="carrousel" aria-label={libelle}>
   <div class="carrousel__fenetre">
-    <ul class="carrousel__piste" role="list">
+    <div class="carrousel__piste">
       {
         optimisees.map((img, i) => (
-          <li
+          <div
             class="carrousel__diapo"
             role="group"
             aria-roledescription="diapositive"
@@ -38,7 +38,7 @@ const optimisees = await Promise.all(
           />
         ))
       }
-    </ul>
+    </div>
   </div>
   <button class="carrousel__fleche carrousel__fleche--prec" type="button" aria-label="Image précédente">
     <svg aria-hidden="true" viewBox="0 0 1000 1000"
