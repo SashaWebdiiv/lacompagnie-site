@@ -1,8 +1,347 @@
 ---
+import { Image, getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
 import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import photo1 from "../assets/galerie/1.png";
+import photo2 from "../assets/galerie/2.png";
+import photo3 from "../assets/galerie/3.png";
+import photo4 from "../assets/galerie/4.png";
+import photo5 from "../assets/galerie/5.png";
+import photo6 from "../assets/galerie/6.png";
+import photo7 from "../assets/galerie/7.png";
+import photo8 from "../assets/galerie/8.png";
+
+/**
+ * Effets de mouvement au défilement de l'ancienne page (Elementor « Motion Effects »), photo par photo :
+ * ty / tx = vitesse de déplacement vertical / horizontal, rz = vitesse de rotation (négative = sens inverse),
+ * opacite = plage d'apparition en %. Actifs sur ordinateur et tablette seulement, comme avant.
+ */
+type Photo = {
+  src: ImageMetadata;
+  ty: number;
+  tx?: number;
+  rz?: number;
+  opacite?: [number, number];
+  devant?: boolean;
+};
+
+const photos: Photo[] = [
+  { src: photo1, ty: 5.9, rz: 0.6 },
+  { src: photo2, ty: 6.1 },
+  { src: photo3, ty: 10 },
+  { src: photo4, ty: 10, rz: -0.8 },
+  { src: photo5, ty: 4.5, tx: 4.5, opacite: [20, 35] },
+  { src: photo6, ty: 6.3 },
+  { src: photo7, ty: 10, rz: -1, devant: true },
+  { src: photo8, ty: 10, devant: true },
+];
+
+const grandes = await Promise.all(photos.map((p) => getImage({ src: p.src, width: 1350, format: "webp" })));
+const rangees = [0, 2, 4, 6].map((i) => [i, i + 1]);
 ---
 
-<Layout page="galerie">
-  <EnConstruction titre="Galerie" />
+<Layout page="galerie" entete="clair" image={grandes[0].src}>
+  <main>
+    <section class="presentation-galerie">
+      <h1 data-anim="zoomIn">La troupe en images</h1>
+      <p data-anim="fadeInUp" style="--anim-delai: 200ms">
+        Le mieux pour découvrir notre association, c’est de vous montrer notre travail quotidien ! C’est pourquoi, on
+        vous propose une petite sélection d’images rien que pour vous ! Et si vous en voulez plus, retrouvez-nous sur{" "}
+        <a href="https://instagram.com/l_acompagnie/" target="_blank" rel="noopener">notre Instagram @l_acompagnie</a> !
+      </p>
+    </section>
+
+    {
+      rangees.map((rangee) => (
+        <div class="rangee">
+          {rangee.map((i) => {
+            const p = photos[i];
+            return (
+              <div class="colonne">
+                <div
+                  class:list={["photo", { "photo--devant": p.devant }]}
+                  data-anim="fadeIn"
+                  style="--anim-delai: 100ms"
+                >
+                  <div
+                    class="photo__mouvement"
+                    data-ty={p.ty}
+                    data-tx={p.tx}
+                    data-rz={p.rz}
+                    data-opacite={p.opacite?.join(",")}
+                  >
+                    <a href={grandes[i].src} class="photo__lien" aria-label={`Agrandir la photo ${i + 1}`}>
+                      <Image
+                        src={p.src}
+                        alt={`La troupe en scène, photo ${i + 1}`}
+                        widths={[400, 640, 1280]}
+                        sizes="(max-width: 767px) 100vw, 636px"
+                      />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))
+    }
+
+    <dialog class="visionneuse" aria-label="Photo agrandie">
+      <button class="visionneuse__fermer" type="button" aria-label="Fermer (Échap)">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3l14 14M17 3L3 17"></path></svg>
+      </button>
+      <img class="visionneuse__image" alt="" />
+    </dialog>
+  </main>
 </Layout>
+
+<script>
+  // ── Effets de mouvement au défilement (formules d'Elementor Pro) ──
+  // progression = part du trajet de la photo à travers l'écran (0 % quand elle entre en bas, 100 % en haut) ;
+  // déplacement = −(progression − 50) × vitesse (px) ; rotation idem en degrés.
+  const ordinateur = matchMedia("(min-width: 768px)");
+  const sansAnimation = matchMedia("(prefers-reduced-motion: reduce)");
+  const mobiles = [...document.querySelectorAll<HTMLElement>(".photo__mouvement")];
+
+  const appliquer = () => {
+    const actif = ordinateur.matches && !sansAnimation.matches;
+    const hauteurEcran = window.innerHeight;
+    for (const el of mobiles) {
+      if (!actif) {
+        el.style.transform = "";
+        el.style.opacity = "";
+        continue;
+      }
+      // On mesure le bloc parent, qui lui ne bouge pas.
+      const zone = el.parentElement!.getBoundingClientRect();
+      const progression = Math.min(100, Math.max(0, ((hauteurEcran - zone.top) / (hauteurEcran + zone.height)) * 100));
+      const pas = (vitesse: number) => -(progression - 50) * vitesse;
+      const parts: string[] = [];
+      if (el.dataset.tx) parts.push(`translateX(${pas(Number(el.dataset.tx))}px)`);
+      if (el.dataset.ty) parts.push(`translateY(${pas(Number(el.dataset.ty))}px)`);
+      if (el.dataset.rz) {
+        const v = Number(el.dataset.rz);
+        // Sens « négatif » : Elementor inverse la progression.
+        const p = v < 0 ? 100 - progression : progression;
+        parts.push(`rotate(${-(p - 50) * Math.abs(v)}deg)`);
+      }
+      el.style.transform = parts.join(" ");
+      if (el.dataset.opacite) {
+        const [debut, fin] = el.dataset.opacite.split(",").map(Number);
+        const t = progression < debut ? 0 : progression >= fin ? 1 : (progression - debut) / (fin - debut);
+        el.style.opacity = String(t);
+      }
+    }
+  };
+
+  let enAttente = false;
+  const planifier = () => {
+    if (enAttente) return;
+    enAttente = true;
+    requestAnimationFrame(() => {
+      enAttente = false;
+      appliquer();
+    });
+  };
+  window.addEventListener("scroll", planifier, { passive: true });
+  window.addEventListener("resize", planifier);
+  ordinateur.addEventListener("change", planifier);
+  appliquer();
+
+  // ── Visionneuse : clic sur une photo pour l'agrandir ──
+  const visionneuse = document.querySelector<HTMLDialogElement>(".visionneuse")!;
+  const grande = visionneuse.querySelector<HTMLImageElement>(".visionneuse__image")!;
+  document.querySelectorAll<HTMLAnchorElement>(".photo__lien").forEach((lien) => {
+    lien.addEventListener("click", (e) => {
+      e.preventDefault();
+      grande.src = lien.href;
+      grande.alt = lien.querySelector("img")?.alt ?? "";
+      visionneuse.showModal();
+    });
+  });
+  visionneuse.querySelector(".visionneuse__fermer")!.addEventListener("click", () => visionneuse.close());
+  // Clic en dehors de la photo : fermeture.
+  visionneuse.addEventListener("click", (e) => {
+    if (e.target === visionneuse) visionneuse.close();
+  });
+</script>
+
+<style>
+  /* ── Présentation ── */
+  .presentation-galerie {
+    max-width: 1372px;
+    margin: 0 auto;
+    padding: 0 30px;
+    background: var(--blanc);
+  }
+
+  .presentation-galerie h1 {
+    padding: 30px 0 20px;
+    font-size: 60px;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: var(--noir);
+    text-align: center;
+  }
+
+  .presentation-galerie p {
+    margin: 0;
+    padding: 30px 13px 64.4px;
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--gris-texte);
+  }
+
+  .presentation-galerie a {
+    color: var(--nuit);
+    text-decoration: none;
+  }
+
+  /* ── Rangées de photos ── */
+  .rangee {
+    display: flex;
+    align-items: center;
+    max-width: 1372px;
+    margin: -50px auto 0;
+    padding: 0 30px;
+  }
+
+  .rangee:first-of-type {
+    margin-top: 0;
+  }
+
+  .colonne {
+    flex: 0 0 50%;
+    padding: 10px;
+  }
+
+  .photo {
+    position: relative;
+    padding-bottom: 50px;
+  }
+
+  .photo--devant {
+    z-index: 999;
+  }
+
+  .photo__lien {
+    display: block;
+  }
+
+  .photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+
+  /* ── Visionneuse ── */
+  .visionneuse {
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .visionneuse::backdrop {
+    background: rgb(0 0 0 / 80%);
+  }
+
+  .visionneuse[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  .visionneuse__image {
+    max-width: 85vw;
+    max-height: 85vh;
+    animation: zoomIn 0.5s both;
+  }
+
+  .visionneuse__fermer {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .visionneuse__fermer svg {
+    width: 20px;
+    height: 20px;
+    stroke: rgb(255 255 255 / 90%);
+    stroke-width: 2.5;
+  }
+
+  /* ── Tablette ── */
+  @media (max-width: 1024px) {
+    .presentation-galerie {
+      padding: 35px 20px;
+    }
+
+    .presentation-galerie h1 {
+      padding: 0 0 30px;
+    }
+
+    .presentation-galerie p {
+      padding: 0 13px 44.4px;
+      font-size: 16px;
+    }
+
+    .rangee {
+      margin-top: -30px;
+      padding: 0 20px;
+    }
+
+    .rangee:first-of-type {
+      margin-top: -40px;
+    }
+
+    .photo {
+      padding-bottom: 30px;
+    }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 767px) {
+    .presentation-galerie {
+      padding: 20px 20px 35px;
+    }
+
+    .presentation-galerie h1 {
+      padding: 0 15px 30px;
+      font-size: 30px;
+    }
+
+    .presentation-galerie p {
+      padding: 0 6px 44.4px;
+      font-size: 14px;
+    }
+
+    .rangee {
+      flex-direction: column;
+      margin-top: 0;
+      padding: 0 15px;
+    }
+
+    .colonne {
+      flex: none;
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .visionneuse__image { animation: none; }
+  }
+</style>
