@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
+import FondDefilement from "../components/FondDefilement.astro";
 import illustration from "../assets/cours/cours-du-soir.svg";
 import horloge from "../assets/cours/horloge.svg";
 import profJohan from "../assets/cours/prof-johan.jpg";
@@ -220,20 +221,8 @@ const adresses = [
   </main>
 </Layout>
 
-<script>
-  // Couleur de fond qui change au défilement, reprise du script de l'ancienne page :
-  // jaune pâle à partir de #one, lavande après #two, rose après #three.
-  const zones = [...document.querySelectorAll<HTMLElement>("[data-couleur]")];
-  const majFond = () => {
-    const y = window.scrollY;
-    zones.forEach((zone, i) => {
-      const haut = zone.getBoundingClientRect().top + y;
-      if (i === 0 ? y >= haut : y > haut) document.body.style.background = zone.dataset.couleur!;
-    });
-  };
-  window.addEventListener("scroll", majFond, { passive: true });
-  window.addEventListener("touchmove", majFond, { passive: true });
-</script>
+<!-- Fond jaune pâle à partir de #one, lavande après #two, rose après #three. -->
+<FondDefilement />
 
 <style>
   /* ── Communs ── */

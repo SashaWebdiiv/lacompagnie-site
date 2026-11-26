@@ -1,8 +1,902 @@
 ---
+import { Image, getImage } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import Carrousel from "../components/Carrousel.astro";
+import FondDefilement from "../components/FondDefilement.astro";
+import afficheAveDarius from "../assets/projets/ave-darius.png";
+import aveDarius1 from "../assets/projets/ave-darius-1.jpg";
+import aveDarius2 from "../assets/projets/ave-darius-2.jpg";
+import aveDarius3 from "../assets/projets/ave-darius-3.jpg";
+import aveDarius4 from "../assets/projets/ave-darius-4.jpg";
+import aveDarius5 from "../assets/projets/ave-darius-5.jpg";
+import aveDarius6 from "../assets/projets/ave-darius-6.jpg";
+import murderNote from "../assets/projets/murder-note-fatale.png";
+import murderGevaudan from "../assets/projets/murder-gevaudan.png";
+import match1 from "../assets/projets/match-1.jpg";
+import match2 from "../assets/projets/match-2.jpg";
+import match3 from "../assets/projets/match-3.png";
+import match4 from "../assets/projets/match-4.png";
+import match5 from "../assets/projets/match-5.jpg";
+import match6 from "../assets/projets/match-6.jpg";
+import fondInfos1 from "../assets/projets/fond-infos-1.png";
+import fondInfos2 from "../assets/projets/fond-infos-2.png";
+import { site } from "../data/site";
+
+const fondNote = await getImage({ src: murderNote, width: 1240, format: "webp" });
+const fondGevaudan = await getImage({ src: murderGevaudan, width: 1024, format: "webp" });
+// Ordre de l'ancien diaporama : testV2-2 puis testV2-1.
+const fondsInfos = await Promise.all(
+  [fondInfos2, fondInfos1].map((img) => getImage({ src: img, width: 1397, format: "webp" })),
+);
+
+const murders = [
+  {
+    titre: "La note fatale",
+    texte:
+      "Caterina, star de la bossa, devait briller sous les projecteurs. Elle s’éteint dans l’ombre d’un mystère que vous allez devoir résoudre.",
+    fond: fondNote.src,
+    hauteur: 249,
+  },
+  {
+    titre: "La Bêtes du Gévaudan",
+    texte:
+      "Une bête rode dans l’ombre et personne n’est à l’abri.Entrez dans la peau des envoyés du roi &nbsp;et tentez de résoudre l’impossible.",
+    fond: fondGevaudan.src,
+    hauteur: 252,
+  },
+];
+
+const competences = [
+  "L'écoute active",
+  "La gestion d'une plateforme et un élément d'éclencheur ",
+  "Une confiance total , ne jamais dire Non !",
+  "Ne plus avoir peur de l'échec",
+];
+
+const icones = {
+  facebook:
+    "M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.150 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z",
+  instagram:
+    "M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.900-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z",
+};
 ---
 
-<Layout page="projets">
-  <EnConstruction titre="Nos projets" />
+<Layout page="projets" entete="clair">
+  <main>
+    <!-- ── Titre ── -->
+    <section class="entree" id="one" data-couleur="#ffffcb">
+      <div class="titre-bloc" data-anim="zoomIn">
+        <hr class="trait trait--titre" />
+        <h1>Nos Projets</h1>
+        <p>Il était une fois une troupe qui écrivait ses propres histoires. Bienvenue dans nos coulisses</p>
+      </div>
+    </section>
+
+    <!-- ── Ave Darius ── -->
+    <section class="ave" data-couleur="#d8d8ff">
+      <div class="conteneur ave__grille">
+        <article class="spectacle" data-anim="fadeInLeft">
+          <div class="spectacle__visuel" tabindex="0">
+            <Image
+              class="spectacle__affiche"
+              src={afficheAveDarius}
+              alt="Affiche d'Ave Darius"
+              widths={[460, 920]}
+              sizes="(max-width: 767px) 100vw, 455px"
+            />
+            <p class="spectacle__resume">
+              Ave Darius est la toute nouvelle création originale de l’Acompagnie du lundi. Cette tragédie contemporaine,
+              à la fois audacieuse, poétique et grinçante, explore les zones floues entre mémoire et illusion, chute et
+              grandeur, foi et vide. Déjà jouée quatre fois cette année, elle a marqué les esprits… et ce n’est que le
+              début : on n’a pas fini d’entendre parler d’Ave Darius.
+            </p>
+          </div>
+          <div class="spectacle__contenu">
+            <h2>Nouvelle pièce de théâtre de l'Acompagnie Improvisée</h2>
+            <p class="spectacle__saison">Saison 2024-2025</p>
+            <ul class="spectacle__reseaux" role="list">
+              <li>
+                <a href={site.facebook} target="_blank" rel="noopener" aria-label="Facebook (nouvel onglet)">
+                  <svg aria-hidden="true" viewBox="0 0 512 512"><path d={icones.facebook}></path></svg>
+                </a>
+              </li>
+              <li>
+                <a href={site.instagram} target="_blank" rel="noopener" aria-label="Instagram (nouvel onglet)">
+                  <svg aria-hidden="true" viewBox="0 0 448 512"><path d={icones.instagram}></path></svg>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <div class="ave__carrousel" data-anim="fadeInRight">
+          <Carrousel
+            images={[aveDarius1, aveDarius2, aveDarius3, aveDarius4, aveDarius5, aveDarius6]}
+            libelle="Photos d'Ave Darius"
+            largeur={830}
+          />
+        </div>
+      </div>
+      <hr class="trait trait--ave" />
+    </section>
+
+    <!-- ── Murder Party ── -->
+    <section class="murder" data-couleur="#d8d8ff">
+      <div class="conteneur">
+        <div class="murder__grille">
+          <div class="murder__texte">
+            <div class="murder__redaction" data-anim="zoomIn" style="--anim-delai: 200ms">
+              <h2>Nos Murder<br />Party</h2>
+              <p>
+                Un meurtre. Des suspects. Des secrets bien gardés.<br />Dans nos <strong>Murder Party</strong>, vous
+                enquêtez en équipe : interrogez les suspects, explorez les pistes, résolvez les énigmes… et surtout, ne
+                pas mourir.
+              </p>
+              <p>Une soirée pleine de suspense, de jeux d’acteurs et de trahisons.<br />Prêts à découvrir la vérité ?</p>
+            </div>
+            <ul class="murder__reseaux" role="list">
+              <li>
+                <a href={site.instagram} target="_blank" rel="noopener" aria-label="Instagram (nouvel onglet)">
+                  <svg aria-hidden="true" viewBox="0 0 448 512"><path d={icones.instagram}></path></svg>
+                </a>
+              </li>
+              <li>
+                <a href={site.facebook} target="_blank" rel="noopener" aria-label="Facebook (nouvel onglet)">
+                  <svg aria-hidden="true" viewBox="0 0 512 512"><path d={icones.facebook}></path></svg>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <ul class="murder__cartes" role="list">
+            {
+              murders.map((m, i) => (
+                <li
+                  class={`carte-murder carte-murder--${i + 1}`}
+                  data-anim="zoomIn"
+                  style={`background-image: url('${m.fond}'); --hauteur: ${m.hauteur}px`}
+                >
+                  <h3>{m.titre}</h3>
+                  <p>
+                    <strong set:html={m.texte} />
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <hr class="trait trait--murder" />
+
+        <!-- ── Match d'impro ── -->
+        <div class="match">
+          <div class="match__grille">
+            <article class="tarif" data-anim="fadeInLeft">
+              <span class="tarif__ruban" aria-hidden="true">L'acompagnie</span>
+              <h2 class="tarif__titre">Pour un</h2>
+              <p class="tarif__prix">Match Impro</p>
+              <h3 class="tarif__liste-titre">Il faut</h3>
+              <ul class="tarif__liste" role="list">
+                {
+                  competences.map((c) => (
+                    <li>
+                      <svg aria-hidden="true" viewBox="0 0 512 512">
+                        <path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" />
+                      </svg>
+                      <span>{c}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+              <a class="tarif__bouton" href="/contact/">Interessé ?</a>
+            </article>
+
+            <div class="match__droite">
+              <div class="arbitre" data-anim="zoomIn">
+                <h3>Annonce de l'arbitre :&nbsp;</h3>
+                <p><strong>Improvisation mixte !</strong></p>
+                <p>
+                  Ayant pour <strong>thème</strong> : Et si c’était votre tour ? ! D’une <strong>durée</strong> d’1 minute
+                  30 ! <strong>Nombre de joueurs</strong> : illimité ! Et la <strong>catégorie</strong> : A la manière&nbsp;
+                </p>
+              </div>
+              <div class="match__carrousel" data-anim="fadeInRight">
+                <Carrousel
+                  images={[match1, match2, match3, match4, match5, match6]}
+                  libelle="Photos de matchs d'impro"
+                  largeur={610}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Infos pratiques ── -->
+    <section class="infos-projets" aria-labelledby="infos-projets-titre">
+      <div class="diaporama" aria-hidden="true">
+        {
+          fondsInfos.map((img, i) => (
+            <div class:list={["diaporama__image", { "est-active": i === 0 }]} style={`background-image: url('${img.src}')`} />
+          ))
+        }
+      </div>
+      <div class="infos-projets__contenu">
+        <h2 id="infos-projets-titre">Infos pratiques</h2>
+        <a class="infos-projets__bouton" href="/contact/"><span>Contactez-nous !</span></a>
+      </div>
+    </section>
+  </main>
 </Layout>
+
+<!-- Fond jaune pâle à partir du titre, lavande ensuite. -->
+<FondDefilement />
+
+<script>
+  // Diaporama de fond du bandeau « Infos pratiques » (repris d'Elementor) : chaque image reste 3 s,
+  // la suivante descend depuis le haut en 3 s, avec un lent zoom (« Ken Burns »).
+  const images = [...document.querySelectorAll<HTMLElement>(".diaporama__image")];
+  const sansAnimation = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (images.length > 1 && !sansAnimation) {
+    let courante = 0;
+    window.setInterval(() => {
+      const ancienne = images[courante];
+      courante = (courante + 1) % images.length;
+      const nouvelle = images[courante];
+      nouvelle.classList.remove("sort", "est-active");
+      nouvelle.classList.add("entre");
+      void nouvelle.offsetWidth;
+      nouvelle.classList.remove("entre");
+      nouvelle.classList.add("est-active");
+      ancienne.classList.remove("est-active");
+      ancienne.classList.add("sort");
+    }, 6000);
+  }
+</script>
+
+<style>
+  .conteneur {
+    max-width: 1312px;
+    margin: 0 auto;
+  }
+
+  .trait {
+    display: block;
+    width: 388px;
+    max-width: 100%;
+    margin: 0 auto;
+    border: 0;
+    border-top: 1px solid var(--nuit);
+  }
+
+  /* ── Titre ── */
+  .entree {
+    padding: 40px 30px 0;
+  }
+
+  .titre-bloc {
+    display: flow-root;
+    max-width: 1312px;
+    margin: 0 auto;
+    padding-bottom: 10px;
+    text-align: center;
+  }
+
+  .trait--titre {
+    margin: 22px auto 32px;
+  }
+
+  .titre-bloc h1 {
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+
+  .titre-bloc p {
+    margin: 0 0 14.4px;
+    font-size: 20px;
+    line-height: 1.7;
+    color: var(--noir);
+  }
+
+  /* ── Ave Darius ── */
+  .ave {
+    display: flow-root;
+    padding: 30px 30px 0;
+  }
+
+  .ave__grille {
+    display: grid;
+    grid-template-columns: 485fr 826fr;
+    align-items: center;
+  }
+
+  /* Pas d'overflow caché : comme sur l'ancien site, le bas de la carte reste à angles droits. */
+  .spectacle {
+    margin-left: 20px;
+    margin-right: 10px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 54%);
+    box-shadow: 0 50px 100px 0 rgb(111 104 146 / 11%);
+  }
+
+  .spectacle__visuel {
+    position: relative;
+  }
+
+  .spectacle__affiche {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px 10px 0 0;
+  }
+
+  /* Résumé qui apparaît au survol de l'affiche, comme sur l'ancien site. */
+  .spectacle__resume {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    padding: 10px;
+    background: #f9f9f9;
+    color: #272727;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  .spectacle__visuel:hover .spectacle__resume,
+  .spectacle__visuel:focus-visible .spectacle__resume {
+    opacity: 1;
+  }
+
+  .spectacle__contenu {
+    padding: 0 0 10px;
+    background: #f9f9f9;
+    font-size: 14px;
+    line-height: 21px;
+    text-align: center;
+  }
+
+  .spectacle h2 {
+    margin: 5px 0;
+    /* « Roboto Slab » sur l'ancien site, jamais chargée : c'est la police système qui s'affichait. */
+    font-family: "Roboto Slab", sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .spectacle__saison {
+    margin: 5px 0 10px;
+    font-size: 16px;
+    line-height: 1.2;
+    letter-spacing: 0.05em;
+    color: var(--gris-texte);
+  }
+
+  .spectacle__reseaux {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 10px 10px 0;
+    list-style: none;
+  }
+
+  .spectacle__reseaux li {
+    height: 60px;
+    margin: 0 10px;
+  }
+
+  .spectacle__reseaux a,
+  .murder__reseaux a {
+    display: inline-block;
+    color: var(--nuit);
+    transition: color 0.3s;
+  }
+
+  .spectacle__reseaux a {
+    height: 60px;
+  }
+
+  .spectacle__reseaux svg {
+    width: 43px;
+    height: 43px;
+    margin-top: 1px;
+    fill: currentColor;
+  }
+
+  .spectacle__reseaux a:hover {
+    color: var(--jaune);
+  }
+
+  .ave__carrousel {
+    --hauteur: 609px;
+    --rayon: 15px;
+  }
+
+  .trait--ave {
+    margin: 36px auto 66px;
+  }
+
+  /* ── Murder Party ── */
+  .murder {
+    padding: 30px 30px 0;
+  }
+
+  .murder__grille {
+    display: grid;
+    grid-template-columns: 635fr 637fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  .murder__redaction {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--nuit);
+  }
+
+  .murder__redaction h2 {
+    margin: 8px 0 16px;
+    font-size: 60px;
+    line-height: 72px;
+    letter-spacing: -2px;
+    text-align: left;
+    color: var(--nuit);
+  }
+
+  .murder__redaction p {
+    margin: 0 0 35px;
+  }
+
+  .murder__reseaux {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 0;
+    padding: 20px;
+    list-style: none;
+    text-align: center;
+  }
+
+  .murder__reseaux li {
+    line-height: 0;
+  }
+
+  .murder__reseaux a {
+    height: 79px;
+  }
+
+  .murder__reseaux svg {
+    width: 68px;
+    height: 68px;
+    fill: currentColor;
+  }
+
+  /* En colonne flex : les marges de 10 px des cartes s'additionnent au lieu de fusionner. */
+  .murder__cartes {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .carte-murder {
+    height: calc(var(--hauteur) + 30px);
+    margin: 10px;
+    padding: 30px 40px 50px;
+    border-radius: 10px;
+    background-color: rgb(255 255 255 / 54%);
+    background-position: center;
+    background-size: cover;
+    box-shadow: 0 50px 100px 0 rgb(111 104 146 / 10%);
+    text-align: center;
+  }
+
+  .carte-murder h3 {
+    margin: 0 0 70px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -1px;
+    color: var(--jaune);
+  }
+
+  .carte-murder p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--blanc);
+  }
+
+  .trait--murder {
+    width: 492px;
+    margin: 19px auto 49px;
+  }
+
+  /* ── Match d'impro ── */
+  .match {
+    padding: 10px;
+  }
+
+  .match__grille {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100.232%;
+    padding: 10px;
+  }
+
+  .tarif {
+    position: relative;
+    width: 89%;
+    overflow: hidden;
+    padding: 48px 64px;
+    border-radius: 5px;
+    background: var(--blanc);
+    box-shadow: rgb(36 36 36 / 10%) 0 3px 40px 0;
+    color: var(--nuit);
+  }
+
+  .tarif__ruban {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    padding: 12.8px 16px;
+    background: var(--nuit);
+    color: var(--blanc);
+    font-family: var(--fonte-titre);
+    font-size: 29px;
+    line-height: 1;
+    letter-spacing: -2px;
+    white-space: nowrap;
+    transform: rotate(-90deg) translateX(-100%);
+    transform-origin: 0 0;
+  }
+
+  .tarif__titre {
+    margin: 0;
+    font-family: "Roboto Slab", sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-transform: none;
+  }
+
+  .tarif__prix {
+    margin: 0 0 48px;
+    font-family: "Roboto", sans-serif;
+    font-size: 60px;
+    font-weight: 400;
+    line-height: 79px;
+  }
+
+  .tarif__liste-titre {
+    margin: 0 0 16px;
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+
+  .tarif__liste {
+    margin: 0 0 48px;
+    padding: 0;
+    list-style: none;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .tarif__liste li {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+
+  .tarif__liste svg {
+    flex: none;
+    width: 15px;
+    height: 12.8px;
+    margin-right: 8px;
+    fill: currentColor;
+  }
+
+  .tarif__bouton {
+    display: inline-block;
+    padding: 12.8px 32px;
+    border-radius: 40px;
+    background: var(--nuit);
+    color: var(--blanc);
+    font: 500 12px/18px "Roboto", sans-serif;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .tarif__bouton:hover {
+    color: var(--jaune);
+  }
+
+  .match__droite {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    padding: 10px;
+  }
+
+  .arbitre {
+    padding: 70px 40px 50px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 54%);
+    box-shadow: 0 50px 100px 0 rgb(111 104 146 / 10%);
+    text-align: center;
+  }
+
+  .arbitre h3 {
+    margin: 0 0 15px;
+    font-size: 24px;
+    line-height: 1.4;
+    letter-spacing: -1px;
+  }
+
+  .arbitre p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--gris-texte);
+  }
+
+  .match__carrousel {
+    --hauteur: 269px;
+    --rayon: 19px;
+    align-self: center;
+  }
+
+  /* ── Infos pratiques ── */
+  .infos-projets {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    overflow: hidden;
+    background: var(--noir);
+    text-align: center;
+  }
+
+  .diaporama,
+  .diaporama__image {
+    position: absolute;
+    inset: 0;
+  }
+
+  .diaporama__image {
+    background: center / cover no-repeat;
+    transform: translateY(100%);
+    transition: transform 3s ease;
+  }
+
+  .diaporama__image.est-active {
+    transform: none;
+    animation: ken-burns 10s linear forwards;
+  }
+
+  /* Prochaine image : part du haut, sans transition, puis descend. */
+  .diaporama__image.entre {
+    transform: translateY(-100%);
+    transition: none;
+  }
+
+  .diaporama__image.sort {
+    transform: translateY(100%);
+  }
+
+  @keyframes ken-burns {
+    from { scale: 1; }
+    to { scale: 1.3; }
+  }
+
+  .infos-projets__contenu {
+    position: relative;
+  }
+
+  .infos-projets h2 {
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: var(--blanc);
+  }
+
+  .infos-projets__bouton {
+    display: inline-block;
+    width: 235px;
+    margin-top: 0;
+    padding: 14px 26px;
+    border-radius: 56px;
+    background: var(--blanc);
+    font: 800 19px/22.8px "Roboto", sans-serif;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .infos-projets__bouton span {
+    color: var(--nuit);
+    transition: color 0.3s;
+  }
+
+  .infos-projets__bouton:hover {
+    background: var(--nuit);
+  }
+
+  .infos-projets__bouton:hover span {
+    color: var(--blanc);
+  }
+
+  /* ── Tablette ── */
+  @media (max-width: 1024px) {
+    .titre-bloc h1 { font-size: 38px; }
+    .titre-bloc p { font-size: 16px; }
+    .ave { padding: 0 30px 30px; }
+    .ave__carrousel { --hauteur: 453px; }
+    .murder { padding: 0 30px 30px; }
+    .murder__redaction { font-size: 16px; }
+    .carte-murder { padding: 30px 15px 30px; }
+    .carte-murder h3 { margin-bottom: 10px; font-size: 20px; line-height: 1.2; }
+    .carte-murder p,
+    .arbitre p { font-size: 14px; }
+    .arbitre { padding: 70px 15px 30px; }
+    .arbitre h3 { margin-bottom: 10px; font-size: 20px; line-height: 1.2; }
+    .tarif { width: 335px; }
+    .tarif__ruban { font-size: 38px; }
+    .tarif__liste-titre { font-size: 38px; }
+    .match__carrousel { --hauteur: 151px; --ecart: 10px; }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 767px) {
+    .entree {
+      padding: 0 20px 35px;
+    }
+
+    .titre-bloc {
+      padding-bottom: 0;
+    }
+
+    .trait--titre {
+      width: 233px;
+      margin: 42px auto 22px;
+    }
+
+    .titre-bloc h1 {
+      padding-bottom: 20px;
+      font-size: 25px;
+    }
+
+    .titre-bloc p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .ave {
+      padding: 0 15px 50px;
+    }
+
+    .ave__grille,
+    .murder__grille,
+    .match__grille {
+      grid-template-columns: 1fr;
+    }
+
+    .spectacle {
+      margin: 0 0 10px;
+    }
+
+    .spectacle__affiche {
+      margin-bottom: 15px;
+    }
+
+    .spectacle__contenu {
+      padding-bottom: 0;
+    }
+
+    .spectacle__saison {
+      font-size: 14px;
+    }
+
+    .ave__carrousel {
+      --ecart: 10px;
+      width: 314px;
+      margin: 20px auto 0;
+    }
+
+    .trait--ave,
+    .trait--murder {
+      width: 233px;
+      margin: 25px auto 25px;
+    }
+
+    .trait--murder {
+      margin: 39px auto 39px;
+    }
+
+    .murder {
+      padding: 0 15px 50px;
+    }
+
+    .murder__grille {
+      gap: 30px;
+    }
+
+    .murder__redaction {
+      padding: 0 30px;
+      font-size: 14px;
+      text-align: justify;
+    }
+
+    .murder__redaction p {
+      text-align: left;
+    }
+
+    .murder__reseaux {
+      gap: 1px;
+    }
+
+    .carte-murder--1 {
+      padding: 0;
+    }
+
+    .carte-murder h3 {
+      margin-bottom: 60px;
+    }
+
+    .match__grille {
+      width: 295px;
+    }
+
+    .tarif {
+      width: 300px;
+      padding: 48px 64px;
+    }
+
+    .tarif__ruban {
+      font-size: 33px;
+    }
+
+    .tarif__titre {
+      font-size: 18px;
+    }
+
+    .tarif__liste-titre {
+      font-size: 25px;
+    }
+
+    .match__droite {
+      width: 300px;
+    }
+
+    .match__carrousel {
+      --hauteur: 191px;
+      width: 275px;
+    }
+
+    .infos-projets {
+      min-height: 250px;
+      padding: 0 15px 10px;
+    }
+
+    .infos-projets h2 {
+      padding-bottom: 20px;
+      font-size: 25px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .diaporama__image.est-active { animation: none; }
+  }
+</style>

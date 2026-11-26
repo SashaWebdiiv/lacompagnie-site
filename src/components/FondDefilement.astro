@@ -1,0 +1,19 @@
+---
+/**
+ * Couleur de fond de la page qui change au défilement, reprise des scripts jQuery de l'ancien site :
+ * dès qu'on dépasse le haut d'un élément portant data-couleur, le fond de la page prend sa couleur.
+ * Comme avant, la couleur n'est pas remise à zéro en remontant.
+ */
+---
+
+<script>
+  const zones = [...document.querySelectorAll<HTMLElement>("[data-couleur]")];
+  const majFond = () => {
+    const y = window.scrollY;
+    for (const zone of zones) {
+      if (y >= zone.getBoundingClientRect().top + y) document.body.style.background = zone.dataset.couleur!;
+    }
+  };
+  window.addEventListener("scroll", majFond, { passive: true });
+  window.addEventListener("touchmove", majFond, { passive: true });
+</script>

@@ -1,0 +1,209 @@
+---
+/**
+ * Carrousel d'images, repris du « media carousel » Elementor de l'ancien site :
+ * une image à la fois, glissement de 0,5 s, défilement automatique toutes les 5 s
+ * (en pause au survol, arrêté dès que la personne le manipule), en boucle, flèches jaunes.
+ * Le balayage au doigt est géré. La taille se règle avec les variables CSS
+ * --hauteur, --rayon et --ecart passées par le parent.
+ */
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  images: ImageMetadata[];
+  /** Nom du carrousel pour les lecteurs d'écran. */
+  libelle: string;
+  /** Largeur maximale d'affichage, pour dimensionner les images. */
+  largeur?: number;
+  class?: string;
+}
+
+const { images, libelle, largeur = 830, class: classe } = Astro.props;
+const optimisees = await Promise.all(
+  images.map((img) => getImage({ src: img, width: Math.min(img.width, largeur * 2), format: "webp" })),
+);
+---
+
+<div class:list={["carrousel", classe]} role="region" aria-roledescription="carrousel" aria-label={libelle}>
+  <div class="carrousel__fenetre">
+    <ul class="carrousel__piste" role="list">
+      {
+        optimisees.map((img, i) => (
+          <li
+            class="carrousel__diapo"
+            role="group"
+            aria-roledescription="diapositive"
+            aria-label={`${i + 1} / ${optimisees.length}`}
+            style={`background-image: url('${img.src}')`}
+          />
+        ))
+      }
+    </ul>
+  </div>
+  <button class="carrousel__fleche carrousel__fleche--prec" type="button" aria-label="Image précédente">
+    <svg aria-hidden="true" viewBox="0 0 1000 1000"
+      ><path
+        d="M646 125C629 125 613 133 604 142L308 442C296 454 292 471 292 487 292 504 296 521 308 533L604 854C617 867 629 875 646 875 663 875 679 871 692 858 704 846 713 829 713 812 713 796 708 779 692 767L438 487 692 225C700 217 708 204 708 187 708 171 704 154 692 142 675 129 663 125 646 125Z"
+      ></path></svg
+    >
+  </button>
+  <button class="carrousel__fleche carrousel__fleche--suiv" type="button" aria-label="Image suivante">
+    <svg aria-hidden="true" viewBox="0 0 1000 1000"
+      ><path
+        d="M696 533C708 521 713 504 713 487 713 471 708 454 696 446L400 146C388 133 375 125 354 125 338 125 325 129 313 142 300 154 292 171 292 187 292 204 296 221 308 233L563 492 304 771C292 783 288 800 288 817 288 833 296 850 308 863 321 871 338 875 354 875 371 875 388 867 400 854L696 533Z"
+      ></path></svg
+    >
+  </button>
+</div>
+
+<script>
+  const DUREE = 500;
+  const AUTO = 5000;
+  const sansAnimation = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.querySelectorAll<HTMLElement>(".carrousel").forEach((carrousel) => {
+    const piste = carrousel.querySelector<HTMLElement>(".carrousel__piste")!;
+    const originales = [...piste.children] as HTMLElement[];
+    const total = originales.length;
+    if (total < 2) return;
+
+    // Boucle sans couture : une copie de la dernière diapo au début, de la première à la fin.
+    const copieDebut = originales[total - 1].cloneNode(true) as HTMLElement;
+    const copieFin = originales[0].cloneNode(true) as HTMLElement;
+    for (const copie of [copieDebut, copieFin]) {
+      copie.setAttribute("aria-hidden", "true");
+      copie.removeAttribute("role");
+    }
+    piste.prepend(copieDebut);
+    piste.append(copieFin);
+
+    let position = 1;
+    let enMouvement = false;
+
+    const placer = (animer: boolean) => {
+      piste.style.transition = animer && !sansAnimation ? `transform ${DUREE}ms ease` : "none";
+      piste.style.transform = `translateX(calc(${-position} * (100% + var(--ecart, 31px))))`;
+    };
+
+    const aller = (cible: number) => {
+      if (enMouvement) return;
+      enMouvement = !sansAnimation;
+      position = cible;
+      placer(true);
+      if (sansAnimation) recaler();
+    };
+
+    // Après passage sur une copie, on revient sans animation sur la vraie diapo.
+    const recaler = () => {
+      enMouvement = false;
+      if (position === 0) position = total;
+      if (position === total + 1) position = 1;
+      placer(false);
+    };
+    piste.addEventListener("transitionend", recaler);
+
+    // Défilement automatique : pause au survol, arrêt définitif après une manipulation.
+    let minuterie: number | undefined;
+    let arrete = sansAnimation;
+    const demarrer = () => {
+      if (arrete) return;
+      window.clearInterval(minuterie);
+      minuterie = window.setInterval(() => aller(position + 1), AUTO);
+    };
+    const pause = () => window.clearInterval(minuterie);
+    const arreter = () => {
+      arrete = true;
+      pause();
+    };
+
+    carrousel.querySelector(".carrousel__fleche--prec")!.addEventListener("click", () => {
+      arreter();
+      aller(position - 1);
+    });
+    carrousel.querySelector(".carrousel__fleche--suiv")!.addEventListener("click", () => {
+      arreter();
+      aller(position + 1);
+    });
+    carrousel.addEventListener("mouseenter", pause);
+    carrousel.addEventListener("mouseleave", demarrer);
+
+    // Balayage au doigt ou à la souris.
+    let departX: number | null = null;
+    piste.addEventListener("pointerdown", (e) => {
+      departX = e.clientX;
+      piste.setPointerCapture(e.pointerId);
+    });
+    piste.addEventListener("pointerup", (e) => {
+      if (departX === null) return;
+      const ecart = e.clientX - departX;
+      departX = null;
+      if (Math.abs(ecart) < 40) return;
+      arreter();
+      aller(position + (ecart < 0 ? 1 : -1));
+    });
+    piste.addEventListener("pointercancel", () => (departX = null));
+
+    placer(false);
+    demarrer();
+  });
+</script>
+
+<style>
+  .carrousel {
+    position: relative;
+    height: var(--hauteur, 609px);
+  }
+
+  .carrousel__fenetre {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .carrousel__piste {
+    display: flex;
+    gap: var(--ecart, 31px);
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .carrousel__diapo {
+    flex: 0 0 100%;
+    height: 100%;
+    border-radius: var(--rayon, 15px);
+    background: center / cover no-repeat;
+  }
+
+  .carrousel__fleche {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: flex;
+    width: 68px;
+    height: 68px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--jaune);
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .carrousel__fleche svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+  }
+
+  .carrousel__fleche--prec { left: 10px; }
+  .carrousel__fleche--suiv { right: 10px; }
+
+  .carrousel__fleche:focus-visible {
+    outline: 2px solid var(--blanc);
+    outline-offset: 2px;
+  }
+</style>
