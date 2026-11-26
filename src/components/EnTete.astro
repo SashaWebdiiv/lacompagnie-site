@@ -3,18 +3,34 @@
  * En-tête posé sur le haut de page (logo, menu, bouton Billetterie) + bouton « hamburger »
  * fixe qui ouvre le menu plein écran. Sur ordinateur, le hamburger n'apparaît qu'après
  * 400 px de défilement, comme sur l'ancien site.
+ *
+ * Deux variantes :
+ * - « sombre » (accueil) : posé en absolu sur la vidéo, logo et menu blancs ;
+ * - « clair » (pages sans visuel en haut) : dans le flux, logo et menu foncés.
  */
 import { Image } from "astro:assets";
-import logo from "../assets/commun/logo.png";
+import logoBlanc from "../assets/commun/logo.png";
+import logoSombre from "../assets/commun/logo-sombre.png";
 import { navigation, navigationPleinEcran, site } from "../data/site";
 
+interface Props {
+  variante?: "sombre" | "clair";
+}
+
+const { variante = "sombre" } = Astro.props;
 const chemin = Astro.url.pathname;
 const estActif = (href: string) => (href === "/" ? chemin === "/" : chemin.startsWith(href));
 ---
 
-<header class="entete">
+<header class:list={["entete", `entete--${variante}`]}>
   <a class="entete__logo" href="/" aria-label={`${site.nom} — accueil`}>
-    <Image src={logo} alt={site.nom} width={166} densities={[1, 2]} loading="eager" />
+    <Image
+      src={variante === "clair" ? logoSombre : logoBlanc}
+      alt={site.nom}
+      width={166}
+      densities={[1, 2]}
+      loading="eager"
+    />
   </a>
 
   <nav class="entete__nav" aria-label="Menu principal">
@@ -150,6 +166,20 @@ const estActif = (href: string) => (href === "/" ? chemin === "/" : chemin.start
   .entete__nav a:hover,
   .entete__nav a[aria-current="page"] {
     color: var(--jaune);
+  }
+
+  /* Variante claire : en-tête dans le flux, menu foncé, page active en gris. */
+  .entete--clair {
+    position: relative;
+  }
+
+  .entete--clair .entete__nav a {
+    color: var(--gris-fonce);
+  }
+
+  .entete--clair .entete__nav a:hover,
+  .entete--clair .entete__nav a[aria-current="page"] {
+    color: #878787;
   }
 
   .entete__billetterie {
@@ -325,7 +355,7 @@ const estActif = (href: string) => (href === "/" ? chemin === "/" : chemin.start
 
     .entete__logo {
       flex: none;
-      padding: 22px;
+      padding: 22px 22px 26px;
     }
 
     .entete__logo img {

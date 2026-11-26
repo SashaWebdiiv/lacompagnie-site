@@ -1,8 +1,679 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import illustration from "../assets/cours/cours-du-soir.svg";
+import horloge from "../assets/cours/horloge.svg";
+import profJohan from "../assets/cours/prof-johan.jpg";
+import profSasha from "../assets/cours/prof-sasha.jpg";
+import profRemi from "../assets/cours/prof-remi.jpg";
+
+/** Les cours, dans l'ordre de l'ancienne page. Le texte est du HTML (retours à la ligne d'origine). */
+const cours = [
+  {
+    titre: "L'acompagnie du lundi",
+    horaire: "Chaque lundi, cours adulte, de 19h45 à 21h45",
+    texte:
+      "Notre cours de théâtre adulte historique, pilier fondateur de l’association.<br><br>Après plusieurs années d’improvisation et de projets multiples, ce groupe s’oriente vers une tournée de notre pièces originales signées par la troupe.<br><br>Un espace chaleureux, engagé, pour celles et ceux qui aiment les challegent et la vie d’artiste !",
+  },
+  {
+    titre: "L'acompagnie du mardi",
+    horaire: "Chaque mardi ,cours adulte , de 19h45 à 22h45",
+    texte:
+      "Nouveauté 2025–2026 : un cours de théâtre adulte ambitieux, mené par un comédien diplômé des Cours Florent.<br><br>Pour les passionné·es qui veulent aller plus loin dans le jeu scénique, l’interprétation et l’exploration de rôles exigeants.<br>Trois heures de travail exigeant et joyeux, avec des projets de scène en ligne de mire.",
+  },
+  {
+    titre: "L'acompagnie du Mercredi",
+    horaire: "Chaque Mercredi , cours adulte , de 19h30 à 21h30",
+    texte:
+      "Nouveauté 2024–2025 : un cours adulte d’improvisation !<br><br>Après une première année haute en couleurs, ce groupe revient avec un programme axé sur les matchs d’improvisation, les jeux collectifs, et des créations spontanées made in L’Acompagnie Improvisée.</p><p>Pour se dépasser, rire et progresser ensemble.",
+  },
+  {
+    titre: "L'ACOMPAGNIE DU JEUDI",
+    horaire: "Chaque jeudi, cours d’improvisation de 19h30 à 21h30",
+    texte:
+      "Nouveauté 2025-2026 : un cours entièrement dédié à l’improvisation !<br><br>Un rendez-vous 100 % impro pour libérer sa créativité, développer l’écoute et s’amuser en équipe.<br>Chaque semaine, les participants inventent des histoires en direct à travers des jeux et des défis ludiques.",
+  },
+  {
+    titre: "La petite compagnie du lundi",
+    horaire: "Chaque lundi , cours enfant (8 à 12 ans) de 17h30 à 19h",
+    apresHoraire: "<br><br>",
+    texte:
+      "Un cours joyeux et bienveillant pour découvrir le théâtre dès le plus jeune âge. Chaque semaine, 12 enfants s’initient à la scène, à la confiance en soi et à l’esprit d’équipe à travers des jeux, des projets et des représentations.<br><br>En fin d’année, les enfants montent sur scène pour prouver que le théâtre, ce n’est pas qu’une aventure pour le grand !&nbsp;",
+  },
+];
+
+const profs = [
+  {
+    nom: "Johan Landel",
+    role: "Le Stratège de l’Ombre",
+    photo: profJohan,
+    texte:
+      "Fondateur et Professeur de l’Acompagnie du lundi, du mercredi, et de la Petite Compagnie du lundi<br><br> Avec plus de 10 ans de théâtre au compteur, Johan forme des comédiens depuis 2021. Il aime diriger, créer, construire… tout en gardant un pas de côté. <br><br><br>Discret sur scène, mais redoutablement créatif en coulisses, il a autant de limites artistiques que de cheveux sur la tête",
+  },
+  {
+    nom: "Sasha Cohen",
+    role: "L’Explorateur Scénique",
+    photo: profSasha,
+    delai: 200,
+    texte:
+      "Fondateur et Professeur de l’Acompagnie du lundi et de la Petite Compagnie du lundi<br><br> Passionné par le théâtre depuis plus de 10 ans, il aime monter des projets qui sortent des cadres : <br> <br>Des pièces qu’on écrit, des univers qu’on invente, et des scènes qu’on partage.<br><br><br> Sur scène, en régie ou en coulisse, Sasha a rarement moins de 3 idées en tête à la fois.<br>",
+  },
+  {
+    nom: "Remi Camps",
+    role: "Le nouveau Michal Hic",
+    photo: profRemi,
+    texte:
+      "Professeur de l’Acompagnie du mardi<br><br> Formé au Cours Florent, membre actif de l’Acompagnie du lundi, comédien et metteur en scène professionnel, Rémi rejoint cette année notre joyeuse équipe avec un atelier ambitieux !<br><br> Un peu par jalousie de son CV théâtral , mais surtout pour la blague, nous avons l’immense plaisir d’accueillir Rémi dans nos rang , avec une illustration qui, à coup sûr, saura lui rendre hommage",
+  },
+];
+
+const adresses = [
+  {
+    libelle: "14 Pl. du Clos de Pacy, 94370 Sucy-en-Brie",
+    href: "https://www.google.fr/maps/place/14+Pl.+du+Clos+de+Pacy,+94370+Sucy-en-Brie/@48.7722565,2.515387,17z/data=!3m1!4b1!4m6!3m5!1s0x47e60c0aa633f455:0x89e6ff40e443f8ff!8m2!3d48.772253!4d2.5179619!16s%2Fg%2F11spkgydxd?hl=fr",
+  },
+  {
+    libelle: "26 Bd de la Serpentine, 94370 Sucy-en-Brie",
+    href: "https://www.google.com/maps/place//data=!4m2!3m1!1s0x47e60bfeeb9d162f:0x34cd4cd6f57baf38",
+  },
+  {
+    libelle: "Boulevard de la liberté , 94370 Sucy-en-Brie",
+    href: "https://www.google.com/maps?q=BOULEVARD+DE+LA+LIBERTE+94370+SUCY+EN+BRIE",
+  },
+];
 ---
 
-<Layout page="cours">
-  <EnConstruction titre="Nos cours" />
+<Layout page="cours" entete="clair">
+  <main>
+    <!-- ── Les cours du soir ── -->
+    <section class="intro">
+      <div class="intro__texte" data-anim="zoomIn" style="--anim-delai: 200ms">
+        <Image class="intro__illustration" src={illustration} alt="" loading="eager" />
+        <h1>Les cours du soir</h1>
+        <p>Retrouvez ici toutes les informations utiles : description des ateliers, niveaux, horaires, tarifs.</p>
+        <p>De quoi vous orienter facilement vers le cours qui vous correspond.</p>
+        <p>
+          Nos ateliers sont ouverts à tous, enfants comme adultes, débutants ou passionnés de longue date. Chacun y
+          trouve sa place pour découvrir, apprendre, s’amuser et progresser à son rythme, dans un cadre bienveillant et
+          stimulant.
+        </p>
+      </div>
+    </section>
+
+    <!-- Repères du changement de couleur de fond (voir le script en bas de page). -->
+    <div class="repere repere--one" id="one" data-couleur="#ffffcb"></div>
+
+    <!-- ── Nos différents cours ── -->
+    <section class="liste" id="two" data-couleur="#d8d8ff">
+      <div class="liste__conteneur">
+        <div class="titre-bloc titre-bloc--cours" data-anim="zoomIn">
+          <hr class="trait" />
+          <h2>Nos Différents cours</h2>
+          <p>
+            Découvrez les différents cours que nous proposons, leurs spécificités et toutes les infos pratiques pour vous
+            lancer sur scène.
+          </p>
+        </div>
+
+        <ul class="cartes" role="list">
+          {
+            cours.map((c, i) => (
+              <li class={`carte-cours carte-cours--${i + 1}`} data-anim="zoomIn">
+                <h3>{c.titre}</h3>
+                <p>
+                  <Image class="emoji" src={horloge} alt="🕒" width={16} height={16} />
+                  <strong>
+                    {" "}
+                    {c.horaire}
+                    <Fragment set:html={c.apresHoraire ?? ""} />
+                  </strong>
+                  {!c.apresHoraire && <br />}
+                  <Fragment set:html={c.texte} />
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── Nos supers profs ── -->
+    <section class="profs" id="three" data-couleur="mistyrose">
+      <div class="conteneur-etroit">
+        <div class="titre-bloc titre-bloc--profs" data-anim="zoomIn">
+          <hr class="trait" />
+          <h2>Nos supers profs</h2>
+          <p>Un trio de choc pour vous aider à dompter les planches !</p>
+        </div>
+
+        <ul class="profs__liste" role="list">
+          {
+            profs.map((prof) => (
+              <li class="prof" data-anim="fadeIn" style={prof.delai ? `--anim-delai: ${prof.delai}ms` : undefined}>
+                <Image
+                  class="prof__photo"
+                  src={prof.photo}
+                  alt={prof.nom}
+                  widths={[400, 734]}
+                  sizes="(max-width: 767px) 100vw, 367px"
+                />
+                <div class="prof__contenu">
+                  <h3>{prof.nom}</h3>
+                  <p class="prof__role">{prof.role}</p>
+                  <p class="prof__texte" set:html={prof.texte} />
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── Infos pratiques ── -->
+    <section class="infos">
+      <div class="conteneur-etroit">
+        <div class="titre-bloc titre-bloc--infos" data-anim="zoomIn">
+          <hr class="trait" />
+          <h2>Infos pratiques</h2>
+        </div>
+        <p class="infos__accroche">
+          Pssst ! Envie de nous rejoindre ? N’attendez plus et <a href="/contact/">contactez-nous</a> !
+        </p>
+
+        <ul class="infos__cartes" role="list">
+          <li class="carte-info carte-info--tarif" data-anim="zoomIn">
+            <svg aria-hidden="true" viewBox="0 0 320 512"
+              ><path
+                d="M310.706 413.765c-1.314-6.63-7.835-10.872-14.424-9.369-10.692 2.439-27.422 5.413-45.426 5.413-56.763 0-101.929-34.79-121.461-85.449h113.689a12 12 0 0 0 11.708-9.369l6.373-28.36c1.686-7.502-4.019-14.631-11.708-14.631H115.22c-1.21-14.328-1.414-28.287.137-42.245H261.95a12 12 0 0 0 11.723-9.434l6.512-29.755c1.638-7.484-4.061-14.566-11.723-14.566H130.184c20.633-44.991 62.69-75.03 117.619-75.03 14.486 0 28.564 2.25 37.851 4.145 6.216 1.268 12.347-2.498 14.002-8.623l11.991-44.368c1.822-6.741-2.465-13.616-9.326-14.917C290.217 34.912 270.71 32 249.635 32 152.451 32 74.03 92.252 45.075 176H12c-6.627 0-12 5.373-12 12v29.755c0 6.627 5.373 12 12 12h21.569c-1.009 13.607-1.181 29.287-.181 42.245H12c-6.627 0-12 5.373-12 12v28.36c0 6.627 5.373 12 12 12h30.114C67.139 414.692 145.264 480 249.635 480c26.301 0 48.562-4.544 61.101-7.788 6.167-1.595 10.027-7.708 8.788-13.957l-8.818-44.49z"
+              ></path></svg
+            >
+            <h3>Tarif 2025-2026</h3>
+            <p><strong>à partir de 125 € / trimestre</strong><br />(règlement trimestriel – tarif selon le cours choisi)</p>
+            <p>&nbsp;</p>
+            <p><br />Pour connaître le tarif précis de chaque cours, contactez-nous directement !</p>
+          </li>
+          <li class="carte-info carte-info--lieux" data-anim="zoomIn" style="--anim-delai: 300ms">
+            <svg aria-hidden="true" viewBox="0 0 288 512"
+              ><path
+                d="M112 316.94v156.69l22.02 33.02c4.75 7.12 15.22 7.12 19.97 0L176 473.63V316.94c-10.39 1.920-21.06 3.06-32 3.06s-21.61-1.14-32-3.06zM144 0C64.47 0 0 64.47 0 144s64.47 144 144 144 144-64.47 144-144S223.53 0 144 0zm0 76c-37.5 0-68 30.5-68 68 0 6.62-5.38 12-12 12s-12-5.38-12-12c0-50.73 41.28-92 92-92 6.62 0 12 5.38 12 12s-5.38 12-12 12z"
+              ></path></svg
+            >
+            <h3>Où  ?</h3>
+            {
+              adresses.map((adresse) => (
+                <>
+                  <p>&nbsp;</p>
+                  <p>
+                    <strong>
+                      <a href={adresse.href} target="_blank" rel="noopener">
+                        {adresse.libelle}
+                      </a>
+                    </strong>
+                  </p>
+                </>
+              ))
+            }
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
 </Layout>
+
+<script>
+  // Couleur de fond qui change au défilement, reprise du script de l'ancienne page :
+  // jaune pâle à partir de #one, lavande après #two, rose après #three.
+  const zones = [...document.querySelectorAll<HTMLElement>("[data-couleur]")];
+  const majFond = () => {
+    const y = window.scrollY;
+    zones.forEach((zone, i) => {
+      const haut = zone.getBoundingClientRect().top + y;
+      if (i === 0 ? y >= haut : y > haut) document.body.style.background = zone.dataset.couleur!;
+    });
+  };
+  window.addEventListener("scroll", majFond, { passive: true });
+  window.addEventListener("touchmove", majFond, { passive: true });
+</script>
+
+<style>
+  /* ── Communs ── */
+  .conteneur-etroit {
+    max-width: 1170px;
+    margin: 0 auto;
+  }
+
+  .trait {
+    width: 388px;
+    max-width: 100%;
+    margin: 0 auto;
+    border: 0;
+    border-top: 1px solid var(--nuit);
+  }
+
+  .titre-bloc h2 {
+    font-size: 52px;
+    line-height: 52px;
+    letter-spacing: -2px;
+    text-align: center;
+  }
+
+  /* Empêche la marge du trait de déborder hors du bloc. */
+  .titre-bloc {
+    display: flow-root;
+  }
+
+  .titre-bloc p,
+  .infos__accroche {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.7;
+    color: var(--noir);
+    text-align: center;
+  }
+
+  /* ── Les cours du soir ── */
+  .intro {
+    padding: 0 30px;
+  }
+
+  .intro__texte {
+    display: flow-root;
+    max-width: 1312px;
+    margin: 0 auto;
+    padding: 0 20px 0 0;
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--nuit);
+    text-align: justify;
+  }
+
+  .intro__illustration {
+    float: right;
+    width: 530px;
+    height: auto;
+    margin: 8px 0 0 80px;
+  }
+
+  .intro h1 {
+    margin: 108px 0 0;
+    font-size: 60px;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: var(--noir);
+    text-align: left;
+  }
+
+  .intro p {
+    margin: 0 0 29px;
+  }
+
+  /* ── Repère #one ── */
+  .repere--one {
+    height: 41px;
+  }
+
+  /* ── Liste des cours ── */
+  .liste {
+    padding: 30px 30px 0;
+  }
+
+  .liste__conteneur {
+    max-width: 1312px;
+    margin: 0 auto;
+  }
+
+  .titre-bloc--cours {
+    padding-bottom: 81px;
+  }
+
+  .titre-bloc--cours .trait {
+    margin: 2px auto 32px;
+  }
+
+  .titre-bloc--cours p {
+    padding-bottom: 14px;
+  }
+
+  .cartes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 40px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .carte-cours {
+    padding: 30px 50px 50px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 54%);
+    box-shadow: 0 50px 100px 0 rgb(111 104 146 / 10%);
+    text-align: center;
+  }
+
+  /* Décalages et marges propres à chaque carte de l'ancienne page. */
+  .carte-cours--1 { padding-inline: 40px; }
+  .carte-cours--3 { margin-left: 10px; margin-right: -10px; padding-inline: 60px; }
+  .carte-cours--4 { margin-left: 0; }
+  .carte-cours--5 { grid-column: 1 / -1; margin-left: 20px; }
+
+  .carte-cours h3 {
+    margin: 0 0 15px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -1px;
+  }
+
+  /* :global car une partie des paragraphes vient du texte d'origine (set:html). */
+  .carte-cours :global(p) {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--gris-texte);
+  }
+
+  .emoji {
+    display: inline;
+    width: 1em;
+    height: 1em;
+    margin: 0 0.07em;
+    vertical-align: -0.1em;
+  }
+
+  /* ── Profs ── */
+  .profs {
+    padding: 50px 0 100px;
+  }
+
+  .titre-bloc--profs .trait {
+    margin: 17px auto 47px;
+  }
+
+  .titre-bloc--profs p {
+    margin: 20px 0 30px;
+    font-size: 20px;
+    line-height: 1.7;
+  }
+
+  /* Positions de l'ancienne page : cartes de 367 px, décalées de 20, 14 et 10 px (sur 1170). */
+  .profs__liste {
+    display: grid;
+    grid-template-columns: 20fr 367fr 14fr 367fr 10fr 367fr 25fr;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .prof {
+    overflow: hidden;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 54%);
+    box-shadow: 0 50px 100px 0 rgb(111 104 146 / 11%);
+  }
+
+  .prof:nth-child(1) { grid-column: 2; }
+  .prof:nth-child(2) { grid-column: 4; }
+  .prof:nth-child(3) { grid-column: 6; }
+
+  .prof__photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .prof__contenu {
+    padding: 0 20px;
+    font-size: 14px;
+    line-height: 21px;
+    text-align: center;
+  }
+
+  .prof h3 {
+    margin: 5px 0;
+    /* « Syne » sur l'ancien site, mais jamais chargée : c'est la police système qui s'affichait. */
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -1px;
+    text-transform: capitalize;
+  }
+
+  .prof__role {
+    margin: 5px 0 10px;
+    font-size: 16px;
+    line-height: 1.2;
+    letter-spacing: 0.05em;
+    text-transform: capitalize;
+    color: var(--gris-texte);
+  }
+
+  .prof__texte {
+    margin: 0 0 14.4px;
+    color: #272727;
+  }
+
+  /* ── Infos pratiques ── */
+  .infos {
+    padding: 0 0 50px;
+  }
+
+  .titre-bloc--infos {
+    padding-bottom: 80px;
+  }
+
+  .titre-bloc--infos .trait {
+    margin: 15px auto 45px;
+  }
+
+  .infos__accroche {
+    padding: 20px 0 14px;
+  }
+
+  .infos__accroche a {
+    color: #003366;
+    text-decoration: none;
+  }
+
+  .infos__cartes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 42px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .carte-info {
+    padding: 50px 40px 50px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 54%);
+    box-shadow: 0 50px 100px 0 rgb(111 104 146 / 10%);
+    text-align: center;
+  }
+
+  .carte-info--lieux {
+    padding-inline: 50px;
+  }
+
+  .carte-info svg {
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 20px;
+    fill: var(--nuit);
+  }
+
+  .carte-info h3 {
+    margin: 0 0 15px;
+    font-size: 24px;
+    line-height: 1.4;
+    letter-spacing: -1px;
+  }
+
+  .carte-info p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--gris-texte);
+  }
+
+  .carte-info a {
+    color: #cc3366;
+    text-decoration: none;
+  }
+
+  .carte-info a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Tablette ── */
+  @media (max-width: 1024px) {
+    .intro__texte { font-size: 16px; }
+    .intro__illustration { width: 45%; margin-left: 30px; margin-bottom: 30px; }
+    .intro h1 { font-size: 40px; }
+
+    .titre-bloc h2 { font-size: 40px; line-height: 1; }
+    .titre-bloc p,
+    .infos__accroche { font-size: 16px; }
+
+    .liste { padding: 0 30px 30px; }
+
+    .carte-cours,
+    .carte-cours--1,
+    .carte-cours--3 { padding: 30px 15px 30px; }
+    .carte-cours h3,
+    .carte-info h3 { margin-bottom: 10px; font-size: 20px; line-height: 1.2; }
+    .carte-cours :global(p),
+    .carte-info p { font-size: 14px; }
+
+    .profs { padding: 35px 30px; }
+    .titre-bloc--profs { padding-bottom: 50px; }
+    .titre-bloc--profs p { margin: 10px 0 0; font-size: 16px; }
+    .prof__contenu { padding: 0 10px 20px; }
+    .prof h3 { font-size: 20px; line-height: 1.1; }
+    .prof__role { font-size: 14px; }
+
+    .infos { padding: 35px 30px 70px; }
+    .titre-bloc--infos { padding-bottom: 50px; }
+    .carte-info,
+    .carte-info--lieux { padding: 50px 15px 30px; }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 767px) {
+    .intro {
+      margin-top: -20px;
+      padding: 0 15px;
+    }
+
+    .intro__texte {
+      padding: 0 30px 30px;
+      font-size: 14px;
+    }
+
+    .intro__illustration {
+      float: none;
+      display: block;
+      width: 100%;
+      margin: 8px 0 30px;
+    }
+
+    .intro h1 {
+      margin-top: 134px;
+      font-size: 30px;
+    }
+
+    .repere--one {
+      height: 36px;
+    }
+
+    .liste {
+      padding: 0 15px 50px;
+    }
+
+    .titre-bloc h2 {
+      margin-bottom: 20px;
+      font-size: 25px;
+      line-height: 25px;
+    }
+
+    .titre-bloc .trait {
+      width: 233px;
+    }
+
+    .titre-bloc--cours {
+      padding-bottom: 1px;
+    }
+
+    .titre-bloc--cours .trait {
+      margin: 22px auto 22px;
+    }
+
+    .titre-bloc--cours h2 {
+      margin-bottom: 20px;
+    }
+
+    .titre-bloc p,
+    .infos__accroche {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .cartes {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .carte-cours,
+    .carte-cours--1,
+    .carte-cours--3,
+    .carte-cours--5 {
+      margin: 0;
+      padding: 30px 15px 30px;
+    }
+
+    .profs {
+      padding: 0 15px;
+    }
+
+    .titre-bloc--profs .trait {
+      margin: 37px auto 37px;
+    }
+
+    /* Le texte ne doit pas fusionner sa marge avec celle du titre. */
+    .titre-bloc--profs p {
+      margin: 0 0 14px;
+      padding-top: 10px;
+    }
+
+    .profs__liste {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .prof:nth-child(n) {
+      grid-column: 1;
+    }
+
+    .infos {
+      padding: 0 15px 40px;
+    }
+
+    .titre-bloc--infos {
+      padding-bottom: 10px;
+    }
+
+    .titre-bloc--infos .trait {
+      margin: 35px auto 35px;
+    }
+
+    .infos__cartes {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+  }
+</style>
