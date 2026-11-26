@@ -115,7 +115,8 @@ import { mesure } from "../data/site";
       w.dataLayer.push(arguments);
     };
     w.gtag("js", new Date());
-    w.gtag("config", id);
+    // Cookies limités à 13 mois (recommandation CNIL ; Google utilise 2 ans par défaut).
+    w.gtag("config", id, { cookie_expires: 60 * 60 * 24 * 395 });
     const script = document.createElement("script");
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;

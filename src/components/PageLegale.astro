@@ -1,0 +1,150 @@
+---
+/**
+ * Gabarit commun des pages légales (mentions, CGV, confidentialité, cookies), repris de l'ancien site :
+ * grand titre centré, intertitres en Lovelo, texte en Roboto fin. Le contenu est du HTML
+ * (dossier src/content-legal/).
+ */
+import Layout from "../layouts/Layout.astro";
+import { mesure, type CleSeo } from "../data/site";
+
+interface Props {
+  page: CleSeo;
+  titre: string;
+  contenu: string;
+}
+
+const { page, titre, contenu } = Astro.props;
+---
+
+<Layout page={page} entete="clair">
+  <main class:list={["page-legale", { "sans-mesure": !mesure.ga4 }]}>
+    <h1>{titre}</h1>
+    <div class="page-legale__texte" set:html={contenu} />
+  </main>
+</Layout>
+
+<style>
+  .page-legale {
+    max-width: 1372px;
+    margin: 0 auto;
+    padding: 30px 30px 70px;
+  }
+
+  .page-legale h1 {
+    padding-bottom: 30px;
+    font-size: 60px;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: var(--noir);
+    text-align: center;
+  }
+
+  .page-legale__texte {
+    max-width: 1297px;
+    padding-top: 50px;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--noir);
+  }
+
+  .page-legale__texte :global(h2),
+  .page-legale__texte :global(h3) {
+    margin: 8px 0 16px;
+    padding-top: 20px;
+    font-family: var(--fonte-titre);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: var(--noir);
+    text-align: left;
+  }
+
+  .page-legale__texte :global(p) {
+    margin: 0 0 14.4px;
+  }
+
+  .page-legale__texte :global(ul) {
+    margin: 0 0 14.4px;
+    padding-left: 40px;
+  }
+
+  .page-legale__texte :global(a) {
+    color: #cc3366;
+    text-decoration: none;
+  }
+
+  .page-legale__texte :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  .page-legale__texte :global(table) {
+    width: 100%;
+    margin: 0 0 14.4px;
+    border-collapse: collapse;
+  }
+
+  .page-legale__texte :global(th),
+  .page-legale__texte :global(td) {
+    padding: 8px 10px;
+    border: 1px solid #dadfee;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .page-legale__texte :global(th) {
+    background: #f9f9f9;
+    font-weight: 600;
+  }
+
+  .page-legale__texte :global([data-ouvrir-consentement]) {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #cc3366;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  /* Tant que la mesure d'audience n'est pas branchée, pas de bannière : on masque le bouton. */
+  .sans-mesure :global(.lien-consentement) {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .page-legale {
+      padding: 20px 20px 40px;
+    }
+
+    .page-legale h1 {
+      padding-bottom: 20px;
+      font-size: 30px;
+    }
+
+    .page-legale__texte {
+      padding-top: 30px;
+    }
+
+    .page-legale__texte :global(table),
+    .page-legale__texte :global(tbody),
+    .page-legale__texte :global(tr),
+    .page-legale__texte :global(td) {
+      display: block;
+      width: 100%;
+    }
+
+    .page-legale__texte :global(thead) {
+      display: none;
+    }
+
+    .page-legale__texte :global(tr) {
+      margin-bottom: 10px;
+      border: 1px solid #dadfee;
+    }
+
+    .page-legale__texte :global(td) {
+      border: 0;
+    }
+  }
+</style>

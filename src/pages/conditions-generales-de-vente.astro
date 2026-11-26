@@ -1,8 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import PageLegale from "../components/PageLegale.astro";
+import contenu from "../content-legal/conditions-generales-de-vente.html?raw";
 ---
 
-<Layout page="cgv">
-  <EnConstruction titre="Conditions générales de vente" />
-</Layout>
+<PageLegale page="cgv" titre="Conditions générales de vente (CGV)" contenu={contenu} />

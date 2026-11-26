@@ -1,8 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import PageLegale from "../components/PageLegale.astro";
+import contenu from "../content-legal/mentions-legales.html?raw";
 ---
 
-<Layout page="mentionsLegales">
-  <EnConstruction titre="Mentions légales" />
-</Layout>
+<PageLegale page="mentionsLegales" titre="Mentions légales" contenu={contenu} />

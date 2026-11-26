@@ -1,8 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import PageLegale from "../components/PageLegale.astro";
+import contenu from "../content-legal/politique-de-cookies.html?raw";
 ---
 
-<Layout page="cookies">
-  <EnConstruction titre="Politique de cookies" />
-</Layout>
+<PageLegale page="cookies" titre="Politique de cookies" contenu={contenu} />

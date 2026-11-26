@@ -1,8 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import EnConstruction from "../components/EnConstruction.astro";
+import PageLegale from "../components/PageLegale.astro";
+import contenu from "../content-legal/politique-de-confidentialite.html?raw";
 ---
 
-<Layout page="confidentialite">
-  <EnConstruction titre="Politique de confidentialité" />
-</Layout>
+<PageLegale page="confidentialite" titre="Politique de confidentialité" contenu={contenu} />
